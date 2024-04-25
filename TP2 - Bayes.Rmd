@@ -18,11 +18,11 @@ date: "Año 2024"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, warning=FALSE}
+
 ```
 
-```{r, include=FALSE}
+```{r}
 #Punto 1:
 sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
   muestras <- matrix(nrow = n, ncol = length(p_inicial))
@@ -83,15 +83,38 @@ data1 <- data.frame(
 for(i in 1:5) {
     indices <- seq(from = 1 + (i - 1) * 200, to = 200 + (i - 1) * 200)
     data1$Densidad[indices] <- kumaraswamy(x_grid, a[i], b[i])
-
 }
 
 library(ggplot2)
+
+# Definimos etiquetas personalizadas para cada función
+etiq <- c(
+  "1" = "alpha = 0.2 , beta = 0.2",
+  "2" = "alpha = 3 , beta = 3",
+  "3" = "alpha = 4 , beta = 9",
+  "4" = "alpha = 10, beta = 5",
+  "5" = "alpha = 1, beta = 7"
+)
+
+# Quiero que se vean alpha y beta como simbolos pero no me sale
+# etiq <- c(
+#   "1" = expression(~ alpha ~ " = 0.2," ~ beta ~ "= 0.2"),
+#   "2" = expression(~ alpha ~ " = 3," ~ beta ~ "= 3"),
+#   "3" = expression(~ alpha ~ " = 4," ~ beta ~ "= 9"),
+#   "4" = expression(~ alpha ~ " = 10," ~ beta ~ "5"),
+#   "5" = expression(~ alpha ~ " = 1," ~ beta ~ "= 7")
+# )
+
 ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
-  geom_line() +
-  facet_wrap(~Funcion)
-
-
+  geom_line(size = 0.55) +
+  facet_wrap(~Funcion, labeller = labeller(Funcion = etiq)) +
+  theme_bw() +
+  labs(x = "x",
+       caption = "Gráfico 1: distribución Kumaraswamy con distintos parámetros") + 
+  theme(
+    strip.background = element_rect(fill = "olivedrab3"),
+    plot.caption = element_text(hjust = 0.5)
+  )
 
 ```
 
