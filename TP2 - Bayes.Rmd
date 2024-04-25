@@ -1,7 +1,20 @@
 ---
-title: "Metropolis - Hastings"
-author: "Ailen - Agustina - Rocio"
-date: "2024-04-24"
+title: |
+  \vspace{1cm}
+  \begin{tabular}{c}
+  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
+  {\Large Facultad de Ciencias Económicas y Estadística}\\
+  \\
+  \includegraphics[width=5cm]{LogoUNR.png}\\
+  \vspace{1cm}
+  \\
+  {\huge\textbf{"Metropolis-Hastings"}}\\
+  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
+  \end{tabular}
+  \vspace{5cm}
+author: |
+  *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
+date: "Año 2024"
 output: pdf_document
 ---
 
