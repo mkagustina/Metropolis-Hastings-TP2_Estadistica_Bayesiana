@@ -178,7 +178,7 @@ grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) + labs (caption = "Titulo 
 
 #Histogramas
 plot_hist <- function(x, d_objetivo) {
-  x_seq <- seq(min(x), max(x), length.out = n_3)
+  x_seq <- seq(min(x), max(x), length.out = n3)
   df_hist <- data.frame(x = x)
   df_line <- data.frame(x = x_seq, y = d_objetivo(x_seq))
   
@@ -221,32 +221,41 @@ grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1)
 
 ```{r}
 #Punto 4
-muestra1 <- tabla_3$muestra[1:5000]
-muestra2 <- tabla_3$muestra[5001:10000]
-muestra3 <- tabla_3$muestra[10001:15000]
+muestra1 <- tabla3$muestra[1:5000]
+muestra2 <- tabla3$muestra[5001:10000]
+muestra3 <- tabla3$muestra[10001:15000]
 
 #Calculo de la media y los percentiles 5 y 95 para X:
 medias <- c(mean(muestra1), mean(muestra2), mean(muestra3))
 percentiles <- data.frame(
   Muestra = c("1", "2", "3"),
-  Percentiles = c(quantile(muestra1, prob = c(0.05)),
+  Percentile_5 = c(quantile(muestra1, prob = c(0.05)),
                   quantile(muestra2, prob = c(0.05)),
                   quantile(muestra3, prob = c(0.05))
                   ),
-  
+  Percentil_95 = c(quantile(muestra1, prob = c(0.95)),
+                  quantile(muestra2, prob = c(0.95)),
+                  quantile(muestra3, prob = c(0.95))
+                  )
 )
 
 #Cálculo de la media y los percentiles 5 y 95 para logit(X):
-l_m1 <- log((muestra1/1-muestra1))
-l_m2 <- log((muestra2/1-muestra2))
-l_m3 <- log((muestra3/1-muestra3))
+l_m1 <- log((muestra1/(1-muestra1)))
+l_m2 <- log((muestra2/(1-muestra2)))
+l_m3 <- log((muestra3/(1-muestra3)))
 
 
 medias_l <- c(mean(l_m1), mean(l_m2), mean(l_m3))
 percentiles_l <- data.frame(
   Muestra = c("1", "2", "3"),
-  Percentil_5 = c(),
-  Percentil_95 =c()
+  Percentile_5 = c(quantile(l_m1, prob = c(0.05)),
+                  quantile(l_m2, prob = c(0.05)),
+                  quantile(l_m3, prob = c(0.05))
+                  ),
+  Percentil_95 = c(quantile(l_m1, prob = c(0.95)),
+                  quantile(l_m2, prob = c(0.95)),
+                  quantile(l_m3, prob = c(0.95))
+                  )
 )
 
 
