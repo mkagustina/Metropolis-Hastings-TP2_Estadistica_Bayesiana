@@ -270,10 +270,7 @@ d_objetivo7 <- function(x) dmvnorm(x,c(0.4,0.75),matrix(c(1.35,0.4,0.4,2.4),nrow
 d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,matrix(c(0.4,0,0,0.4),nrow=2))
 r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matrix(c(0.4,0,0,0.4),nrow=2))
 funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
-muestra7 <- data.frame(
-  valor1 = funcion7$muestras[,1],
-  valor2 = funcion7$muestras[,2]
-)
+muestra7 <- funcion7$muestras
 
 #Trace plot
 plot_trace <- function(x, y) {
@@ -325,5 +322,6 @@ r_hat <- function(x) {
 
 
 r_hat(muestra7)
+
 ```
 
