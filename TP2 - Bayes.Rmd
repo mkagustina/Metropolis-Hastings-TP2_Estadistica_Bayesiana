@@ -19,10 +19,15 @@ output: pdf_document
 ---
 
 ```{r setup, warning=FALSE}
-
+#Librerias
+library(ggplot2)
+set.seed(394)
 ```
 
 ```{r}
+
+cant_saltos <- 0
+
 #Punto 1:
 sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
   muestras <- matrix(nrow = n, ncol = length(p_inicial))
@@ -43,6 +48,8 @@ sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
     
     if(aceptar) { 
       muestras[i,] <- p_nuevo
+      cant_saltos <- cant_saltos + 1
+      
     } else {
       muestras[i,] <- p_actual
     }
@@ -51,7 +58,7 @@ sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
   if (ncol(muestras) == 1) {
     muestras <- as.vector(muestras)
   } 
-  return(muestras)
+  return(list(muestras=muestras,cant_saltos=cant_saltos))
 }
 
 ```
@@ -85,7 +92,7 @@ for(i in 1:5) {
     data1$Densidad[indices] <- kumaraswamy(x_grid, a[i], b[i])
 }
 
-library(ggplot2)
+
 
 # Definimos etiquetas personalizadas para cada función
 # etiq <- c(
@@ -127,6 +134,8 @@ d_objetivo <- function(x) kumaraswamy(x, 6, 2)
 d_propuesta <- function(x, mean) dbeta(x, shape1 = mean * 4, shape2 = (1-mean) * 4)
 r_propuesta <- function(x) rbeta(1, shape1 = x * 4, shape2 = (1-x) * 4)
 #Donde x hace referencia a mu
-
-sample_mh(d_objetivo, r_propuesta, d_propuesta, 0.5, 200)
+n_3 <- 5000
+funcion_3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, 0.5, n_3)
+muestra_3 <- funcion_3$muestras
+tasa_3 <- funcion_3$cant_saltos/n_3
 ```
