@@ -138,4 +138,8 @@ n_3 <- 5000
 funcion_3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, 0.5, n_3)
 muestra_3 <- funcion_3$muestras
 tasa_3 <- funcion_3$cant_saltos/n_3
+
+a <- 3
+b <- 5
+c <- 4
 ```
