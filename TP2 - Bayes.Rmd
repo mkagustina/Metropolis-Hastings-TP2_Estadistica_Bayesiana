@@ -142,4 +142,6 @@ tasa_3 <- funcion_3$cant_saltos/n_3
 a <- 3
 b <- 5
 c <- 4
+y <- 7
+
 ```
