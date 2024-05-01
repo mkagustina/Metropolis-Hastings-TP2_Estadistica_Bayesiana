@@ -22,6 +22,9 @@ output: pdf_document
 #Librerias
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
+library(kableExtra)
+library(stats)
 set.seed(394)
 ```
 
@@ -118,38 +121,98 @@ ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
 
 ```{r}
 #Punto 3
-concentracion_3 <- c(4,10,20)
-tabla_3 <- data.frame ( 
-  concentracion = rep(concentracion_3, each = 5000),
+concentracion3 <- c(4,10,20)
+tabla3 <- data.frame ( 
+  concentracion = rep(concentracion3, each = 5000),
   muestra = numeric(15000)
   )
-tasa_3 <- numeric(3)
+tasa3 <- numeric(3)
 
 for (i in 1:3) {
 #Funciones a usar
 d_objetivo <- function(x) kumaraswamy(x, 6, 2)
-d_propuesta <- function(x, mean) dbeta(x, shape1 = mean * concentracion_3[i], shape2 = (1-mean) * concentracion_3[i])
-r_propuesta <- function(x) rbeta(1, shape1 = x * concentracion_3[i], shape2 = (1-x) * concentracion_3[i])
+d_propuesta <- function(x, mean) dbeta(x, shape1 = mean * concentracion3[i], shape2 = (1-mean) * concentracion3[i])
+r_propuesta <- function(x) rbeta(1, shape1 = x * concentracion3[i], shape2 = (1-x) * concentracion3[i])
 #Donde x hace referencia a mu
-n_3 <- 5000
+n3 <- 5000
 p_inicial <- rbeta(1,shape1=2,shape2=2)
-funcion_3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, p_inicial, n_3)
+funcion3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, p_inicial, n3)
 indices <- seq(from = 1 + (i - 1) * 5000, to = 5000 + (i - 1) * 5000)
-tabla_3$muestra[indices] <- funcion_3$muestras
+tabla3$muestra[indices] <- funcion3$muestras
 
-tasa_3[i] <- funcion_3$cant_saltos/n_3
+tasa3[i] <- funcion3$cant_saltos/n3
 } 
 
+#Tasa de aceptacion
+tabla3_2 <- data.frame(
+  Concentracion = c("4","10","20"),
+  Tasa_de_aceptacion = tasa3
+) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Pie tabla")
+
+#Gata peluda junta
 # Agrego una columna con el orden de las muestras
-tabla_3$orden <- rep(1:5000, times = 3)
-tabla_3$concentracion <- as.factor(tabla_3$concentracion) 
+tabla3$orden <- rep(1:5000, times = 3)
+tabla3$concentracion <- as.factor(tabla3$concentracion) 
+
 
 # Gráfico con múltiples líneas
-ggplot(data = tabla_3, aes(x = orden, y = muestra, group = concentracion, color = concentracion)) +
+grafico3_1 <- ggplot(data = tabla3, aes(x = orden, y = muestra, group = concentracion, color = concentracion)) +
   geom_line() +
   theme_bw() +
-  labs(x = "x", y = "y", color = "Group") +
-  theme(legend.position = "top")
+  labs(x = "x", y = "y", color = "Group", caption = "Título grafico") +
+  theme(legend.position = "top")  
+  
+#Trace plots
+plot_trace <- function(x){
+  data.frame(x = seq_along(x), y = x) %>% 
+    ggplot() +
+    geom_line(aes(x = x, y = y))
+}
 
+grafico3_2 <- plot_trace(tabla3$muestra[1:5000]) + labs (caption = "Titulo grafico")
+grafico3_3 <- plot_trace(tabla3$muestra[5001:10000]) + labs (caption = "Titulo grafico")
+grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) + labs (caption = "Titulo grafico")
 
+#Histogramas
+plot_hist <- function(x, d_objetivo) {
+  x_seq <- seq(min(x), max(x), length.out = n_3)
+  df_hist <- data.frame(x = x)
+  df_line <- data.frame(x = x_seq, y = d_objetivo(x_seq))
+  
+  ggplot(df_hist)+
+    geom_histogram(aes(x = x, y =after_stat(density))) +
+    geom_line(aes(x = x, y = y), data = df_line, color = "red")
+}
+grafico3_5 <- plot_hist(tabla3$muestra[1:5000],d_objetivo) +
+  labs (title = "k=4", x = "Muestras", y = "Densidad")
+grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo) +
+  labs (title = "k=10", x = "Muestras", y = "Densidad")
+grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo) +
+  labs (title = "k=20", x = "Muestras", y = "Densidad")
+
+grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1)
+
+#Graficos de autocorrelacion
+a3 <- acf(tabla3$muestra[1:5000])
+
+grafico3_8 <- ggplot()+
+  geom_line(aes(y = a3$acf, x = a$lag)) +
+  labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
+
+b3 <- acf(tabla3$muestra[1:5000])
+
+grafico3_9 <- ggplot()+
+  geom_line(aes(y = b3$acf, x = a$lag)) +
+  labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
+
+c3 <- acf(tabla3$muestra[1:5000])
+
+grafico3_10 <- ggplot()+
+  geom_line(aes(y = c3$acf, x = a$lag)) +
+  labs (title = "k=20", x = "Rezago", y = "Autocorrelación")
+
+grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1)
 ```
