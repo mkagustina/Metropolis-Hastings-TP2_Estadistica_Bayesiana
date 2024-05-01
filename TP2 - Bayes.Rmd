@@ -22,6 +22,7 @@ output: pdf_document
 #Librerias
 library(ggplot2)
 library(dplyr)
+library(gridExtra)
 set.seed(394)
 ```
 
@@ -146,12 +147,34 @@ n_3 <- 5000
 p_inicial <- rbeta(1,shape1=2,shape2=2)
 funcion_3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, p_inicial, n_3)
 indices <- seq(from = 1 + (i - 1) * 5000, to = 5000 + (i - 1) * 5000)
-tabla_3[indices] <- funcion_3$muestras
+tabla_3$muestra[indices] <- funcion_3$muestras
 
 tasa_3[i] <- funcion_3$cant_saltos/n_3
 } 
 
+plot_trace <- function(x){
+  data.frame(x = seq_along(x), y = x) %>% 
+    ggplot() +
+    geom_line(aes(x = x, y = y))
+}
+
+grafico_3_1 <- plot_trace(tabla_3$muestra[1:5000])
+grafico_3_2 <- plot_trace(tabla_3$muestra[5001:10000])
+grafico_3_3 <- plot_trace(tabla_3$muestra[10001:15000])
+
+plot_hist <- function(x, d_objetivo) {
+  x_seq <- seq(min(x), max(x), length.out = n_3)
+  df_hist <- data.frame(x = x)
+  df_line <- data.frame(x = x_seq, y = d_objetivo(x_seq))
+  
+  ggplot(df_hist)+
+    geom_histogram(aes(x = x, y =after_stat(density))) +
+    geom_line(aes(x = x, y = y), data = df_line, color = "red")
+}
 
 
+grafico_3_4 <- plot_hist(tabla_3$muestra[1:5000],d_objetivo)
+grafico_3_5 <- plot_hist(tabla_3$muestra[5001:10000],d_objetivo)
+grafico_3_4 <- plot_hist(tabla_3$muestra[10001:15000],d_objetivo)
 
 ```
