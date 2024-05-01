@@ -35,3 +35,29 @@ Para elegir el punto inicial del algoritmo de MH, obtenga un valor aleatorio de 
 
 Metropolis-Hastings en 2D
 
+Como veremos en esta sección del trabajo práctico, la verdadera utilidad del algoritmo de Metropolis-Hastings se aprecia cuando se obtienen muestras de distribuciones en más de una dimensión, incluso cuando no se conoce la constante de normalización. Paradójicamente, los ejemplos trabajados a continuación también serán los que nos permitirán advertir sus limitaciones y motivarán la búsqueda de mejores alternativas.
+
+Normal multivariada
+
+La distribución normal multivariada es la generalización de la distribución normal univariada a múltiples dimensiones (o mejor dicho, el caso en una dimensión es un caso particular de la distribución en múltiples dimensiones). La función de densidad de la distribución normal en k dimensiones es:
+
+p(x|mu,sigma)=1/2pi^(k/2)det(sigma)^(1/2) exp ( -1/2 (x-mu)^T sigma^(-1) (x-mu) )
+
+donde mu es el vector de medias y sigma la matriz de covarianza.
+
+6.Escriba una función que implemente el algoritmo de Metropolis-Hastings para tomar muestras de una función de probabilidad bivariada dada. Separe en funciones cada una de los pasos del algoritmo. La probabilidad de salto será normal bivariada de matriz de covarianza variable (utilizar para ello la función rmvnorm del paquete {mvtnorm}). Otorgue flexibilidad al algoritmo haciendo que reciba como argumento la matriz de covarianza de la probabilidad de transición.
+
+7. Utilice la función escrita en el punto anterior para obtenga muestras de una distribución normal bivariada con media mu* y matriz de covarianza sigma*. Determine una matriz de covarianza que crea conveniente para la distribución de propuesta. Justifique su decisión y valide la bondad del método mediante el uso de traceplots y las estadísticas que crea adecuadas.
+
+mu*=[0.4,0.75]^T 
+
+sigma*=|1.35,0.4|
+       |0.4 ,2.4|
+
+8.Estime las siguientes probabilidades utilizando las muestras obtenidas:
+
+i)Pr(X_1>1,X_2<0)
+ii)Pr(X_1>1,X_2>2)
+iii)Pr(X_1>0.4,X_2>0.75)
+
+Luego, calcule esas mismas probabilidades mediante algún método que crea conveniente (función de distribución, integración manual, integración numérica, monte carlo, etc.), y compare los resultados con los obtenidos en base a las muestras seleccionadas con MH y concluya.
