@@ -270,8 +270,60 @@ d_objetivo7 <- function(x) dmvnorm(x,c(0.4,0.75),matrix(c(1.35,0.4,0.4,2.4),nrow
 d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,matrix(c(0.4,0,0,0.4),nrow=2))
 r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matrix(c(0.4,0,0,0.4),nrow=2))
 funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
-muestra7 <- funcion7$muestras
+muestra7 <- data.frame(
+  valor1 = funcion7$muestras[,1],
+  valor2 = funcion7$muestras[,2]
+)
+
+#Trace plot
+plot_trace <- function(x, y) {
+  n <- length(x)
+  df <- data.frame(
+    x = rep(1:n, 2),
+    y = c(x,y),
+    dimension = rep(1:2, each = n)
+  )
+  
+  ggplot(df) + 
+    geom_line(aes(x = x, y = y)) +
+    facet_grid(rows = vars(dimension))
+}
 
 
+grafico7_1 <- plot_trace(muestra7[,1],muestra7[,2])
+
+#Estadisticas
+
+#R sombrero
+
+W <- function(muestras) {
+  
+  mean(apply(muestras, 2, var))
+ 
+}
+
+
+B <-  function(muestras, M, S) {
+  media_g <- mean(muestras)
+  media_cadena <- mean(apply(muestras, 2, mean))
+  
+  b <- (S/(M-1))* sum((media_cadena-media_g)^2)
+  #S = nrow(muestras)
+  #M = nrow
+  return(b)
+}
+
+
+r_hat <- function(x) {
+  S <- nrow(x)
+  M <- ncol(x)
+  W <- W(x)
+  B <- B(x, M, S)
+  
+  sqrt(((S/(S-1))*W + (1/S)*B)/W)
+}
+
+
+r_hat(muestra7)
 ```
 
