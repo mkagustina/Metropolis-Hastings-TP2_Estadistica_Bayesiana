@@ -25,6 +25,7 @@ library(dplyr)
 library(gridExtra)
 library(kableExtra)
 library(stats)
+library(mvtnorm)
 set.seed(394)
 ```
 
@@ -130,13 +131,13 @@ tasa3 <- numeric(3)
 
 for (i in 1:3) {
 #Funciones a usar
-d_objetivo <- function(x) kumaraswamy(x, 6, 2)
-d_propuesta <- function(x, mean) dbeta(x, shape1 = mean * concentracion3[i], shape2 = (1-mean) * concentracion3[i])
-r_propuesta <- function(x) rbeta(1, shape1 = x * concentracion3[i], shape2 = (1-x) * concentracion3[i])
+d_objetivo3 <- function(x) kumaraswamy(x, 6, 2)
+d_propuesta3 <- function(x, mean) dbeta(x, shape1 = mean * concentracion3[i], shape2 = (1-mean) * concentracion3[i])
+r_propuesta3 <- function(x) rbeta(1, shape1 = x * concentracion3[i], shape2 = (1-x) * concentracion3[i])
 #Donde x hace referencia a mu
 n3 <- 5000
-p_inicial <- rbeta(1,shape1=2,shape2=2)
-funcion3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, p_inicial, n3)
+p_inicial3 <- rbeta(1,shape1=2,shape2=2)
+funcion3 <- sample_mh(d_objetivo3, r_propuesta3, d_propuesta3, p_inicial3, n3)
 indices <- seq(from = 1 + (i - 1) * 5000, to = 5000 + (i - 1) * 5000)
 tabla3$muestra[indices] <- funcion3$muestras
 
@@ -177,20 +178,20 @@ grafico3_3 <- plot_trace(tabla3$muestra[5001:10000]) + labs (caption = "Titulo g
 grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) + labs (caption = "Titulo grafico")
 
 #Histogramas
-plot_hist <- function(x, d_objetivo) {
+plot_hist <- function(x, d_objetivo3) {
   x_seq <- seq(min(x), max(x), length.out = n3)
   df_hist <- data.frame(x = x)
-  df_line <- data.frame(x = x_seq, y = d_objetivo(x_seq))
+  df_line <- data.frame(x = x_seq, y = d_objetivo3(x_seq))
   
   ggplot(df_hist)+
     geom_histogram(aes(x = x, y =after_stat(density))) +
     geom_line(aes(x = x, y = y), data = df_line, color = "red")
 }
-grafico3_5 <- plot_hist(tabla3$muestra[1:5000],d_objetivo) +
+grafico3_5 <- plot_hist(tabla3$muestra[1:5000],d_objetivo3) +
   labs (title = "k=4", x = "Muestras", y = "Densidad")
-grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo) +
+grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo3) +
   labs (title = "k=10", x = "Muestras", y = "Densidad")
-grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo) +
+grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo3) +
   labs (title = "k=20", x = "Muestras", y = "Densidad")
 
 grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1)
@@ -221,28 +222,28 @@ grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1)
 
 ```{r}
 #Punto 4
-muestra1 <- tabla3$muestra[1:5000]
-muestra2 <- tabla3$muestra[5001:10000]
-muestra3 <- tabla3$muestra[10001:15000]
+muestra4_1 <- tabla3$muestra[1:5000]
+muestra4_2 <- tabla3$muestra[5001:10000]
+muestra4_3 <- tabla3$muestra[10001:15000]
 
 #Calculo de la media y los percentiles 5 y 95 para X:
-medias <- c(mean(muestra1), mean(muestra2), mean(muestra3))
+medias <- c(mean(muestra4_1), mean(muestra4_2), mean(muestra4_3))
 percentiles <- data.frame(
   Muestra = c("1", "2", "3"),
-  Percentile_5 = c(quantile(muestra1, prob = c(0.05)),
-                  quantile(muestra2, prob = c(0.05)),
-                  quantile(muestra3, prob = c(0.05))
+  Percentile_5 = c(quantile(muestra4_1, prob = c(0.05)),
+                  quantile(muestra4_2, prob = c(0.05)),
+                  quantile(muestra4_3, prob = c(0.05))
                   ),
-  Percentil_95 = c(quantile(muestra1, prob = c(0.95)),
-                  quantile(muestra2, prob = c(0.95)),
-                  quantile(muestra3, prob = c(0.95))
+  Percentil_95 = c(quantile(muestra4_1, prob = c(0.95)),
+                  quantile(muestra4_2, prob = c(0.95)),
+                  quantile(muestra4_3, prob = c(0.95))
                   )
 )
 
 #Cálculo de la media y los percentiles 5 y 95 para logit(X):
-l_m1 <- log((muestra1/(1-muestra1)))
-l_m2 <- log((muestra2/(1-muestra2)))
-l_m3 <- log((muestra3/(1-muestra3)))
+l_m1 <- log((muestra4_1/(1-muestra4_1)))
+l_m2 <- log((muestra4_2/(1-muestra4_2)))
+l_m3 <- log((muestra4_3/(1-muestra4_3)))
 
 
 medias_l <- c(mean(l_m1), mean(l_m2), mean(l_m3))
@@ -261,3 +262,16 @@ percentiles_l <- data.frame(
 
 
 ```
+
+```{r}
+#Paso 7
+n7 <- 1000
+d_objetivo7 <- function(x) dmvnorm(x,c(0.4,0.75),matrix(c(1.35,0.4,0.4,2.4),nrow=2))
+d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,matrix(c(0.4,0,0,0.4),nrow=2))
+r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matrix(c(0.4,0,0,0.4),nrow=2))
+funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
+muestra7 <- funcion7$muestras
+
+
+```
+
