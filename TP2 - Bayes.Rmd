@@ -199,19 +199,19 @@ grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1)
 a3 <- acf(tabla3$muestra[1:5000])
 
 grafico3_8 <- ggplot()+
-  geom_line(aes(y = a3$acf, x = a$lag)) +
+  geom_line(aes(y = a3$acf, x = a3$lag)) +
   labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
 
 b3 <- acf(tabla3$muestra[1:5000])
 
 grafico3_9 <- ggplot()+
-  geom_line(aes(y = b3$acf, x = a$lag)) +
+  geom_line(aes(y = b3$acf, x = b3$lag)) +
   labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
 
 c3 <- acf(tabla3$muestra[1:5000])
 
 grafico3_10 <- ggplot()+
-  geom_line(aes(y = c3$acf, x = a$lag)) +
+  geom_line(aes(y = c3$acf, x = c3$lag)) +
   labs (title = "k=20", x = "Rezago", y = "Autocorrelación")
 
 grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1)
