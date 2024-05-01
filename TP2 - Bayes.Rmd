@@ -146,12 +146,21 @@ n_3 <- 5000
 p_inicial <- rbeta(1,shape1=2,shape2=2)
 funcion_3 <- sample_mh(d_objetivo, r_propuesta, d_propuesta, p_inicial, n_3)
 indices <- seq(from = 1 + (i - 1) * 5000, to = 5000 + (i - 1) * 5000)
-tabla_3[indices] <- funcion_3$muestras
+tabla_3$muestra[indices] <- funcion_3$muestras
 
 tasa_3[i] <- funcion_3$cant_saltos/n_3
 } 
 
+# Agrego una columna con el orden de las muestras
+tabla_3$orden <- rep(1:5000, times = 3)
+tabla_3$concentracion <- as.factor(tabla_3$concentracion) 
 
+# Gráfico con múltiples líneas
+ggplot(data = tabla_3, aes(x = orden, y = muestra, group = concentracion, color = concentracion)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "x", y = "y", color = "Group") +
+  theme(legend.position = "top")
 
 
 ```
