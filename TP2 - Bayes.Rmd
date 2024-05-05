@@ -292,13 +292,27 @@ W <- function(muestras) {
 
 
 B <-  function(muestras, M, S) {
-  media_g <- mean(muestras)
-  media_cadena <- mean(apply(muestras, 2, mean))
+  data_mu1 <- data.frame (
+    m1 <- muestras$M1_mu1,
+    m2 <- muestras$M2_mu1,
+    m3 <- muestras$M3_mu1
+  )
+  data_mu2 <- data.frame (
+    m1 <- muestras$M1_mu2,
+    m2 <- muestras$M2_mu2,
+    m3 <- muestras$M3_mu2
+  )
+  media_g_mu1 <- mean(data_mu1)
+  media_g_mu2 <- mean(data_mu2)
+  media_cadena_mu1 <- mean(apply(data_mu1, 2, mean))
+  media_cadena_mu2 <- mean(apply(data_mu2, 2, mean))
   
-  b <- (S/(M-1))* sum((media_cadena-media_g)^2)
-  #S = nrow(muestras)
-  #M = nrow
-  return(b)
+  
+  b_mu1 <- (S/(M-1))* sum((media_cadena_mu1-media_g_mu1)^2)
+  b_mu2 <- (S/(M-1))* sum((media_cadena_mu2-media_g_mu2)^2)
+  #S = cantidad observaciones
+  #M = cantidad muestras
+  return(list(b_mu1 = b_mu1, b_mu2 = b_mu2))
 }
 
 
@@ -307,8 +321,11 @@ r_hat <- function(x) {
   M <- ncol(x)
   W <- W(x)
   B <- B(x, M, S)
-  
-  sqrt(((S/(S-1))*W + (1/S)*B)/W)
+  b_mu1 <- B$b_mu1
+  b_mu2 <- B$b_mu2
+  r_hat_mu1 <- sqrt(((S/(S-1))*W + (1/S)*b_mu1)/W)
+  r_hat_mu2 <- sqrt(((S/(S-1))*W + (1/S)*b_mu2)/W)
+  return (list (r_hat_mu1 = r_hat_mu1, r_hat_mu2 = r_hat_mu2))
 }
 
 #3. Número efectivo de muestras
@@ -329,6 +346,7 @@ funcion7_1 <- function(matriz_cov) {
     d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,sigma = matriz_cov)
     r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matriz_cov)  
 
+
 funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
 muestra7 <- funcion7$muestras
 grafico7_1 <- plot_trace(muestra7[,1],muestra7[,2])
@@ -337,6 +355,32 @@ n_eff7_1 <- n_eff(muestra7[,1])
 n_eff7_2 <- n_eff(muestra7[,2])
  return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2, r = r_sombrero,
              muestra7 = muestra7))
+
+    muestras <- data.frame(
+      M1_mu1 = numeric(n7),
+      M1_mu2 = numeric(n7),
+      M2_mu1 = numeric(n7),
+      M2_mu2 = numeric(n7),
+      M3_mu1 = numeric(n7),
+      M3_mu2 = numeric(n7)
+    )
+    j <- c(1, 3, 5)
+    for(i in j) {
+      p_inicial7 <- rmvnorm(1, mean = c(0.4,0.75), sigma = diag(2)) 
+      funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,p_inicial7,n7)
+      muestras[,i] <- funcion7$muestras[,1]
+      muestras[,i+1] <- funcion7$muestras[,2]
+      
+    }
+
+grafico7_1 <- plot_trace(muestras[,1],muestras[,2])
+r_sombrero <- r_hat(muestras)
+r_sombrero_mu1 <- r_sombrero$r_hat_mu1
+r_sombrero_mu2 <- r_sombrero$r_hat_mu2
+n_eff7_mu1 <- n_eff(muestras[,1])
+n_eff7_mu2 <- n_eff(muestras[,2])
+ return(list(grafico = grafico7_1, n1 = n_eff7_mu1, n2 = n_eff7_mu2, r_mu1 = r_hat_mu1, r_mu2 = r_hat_mu2, muestra7 = muestra7))
+
 }
 
 #Evalucación de diferentes matrices de variancia y covariancia
