@@ -459,13 +459,33 @@ pmvnorm(lower = c(0.4, 0.75), upper = c(Inf, Inf),
 ```{r}
 #Punto 9
 
-p_estrella <- function(x, y, a, b){
-  exp(-((((a - x)^2) + b * ((y - x)^2))^2))
+p_estrella <- function(x, a, b){
+  exp(-((((a - x[1])^2) + b * ((x[2] - x[1])^2))^2))
 }
 
-d_objetivo9 <- function(x, y) p_estrella(x, y, a, b)
 
-d_propuesta9 <- function()
-r_propuesta9 <- 
+
+n9 <- 5000
+
+funcion9_1 <- function(matriz_cov) {
+    d_objetivo9 <- function(x) p_estrella(x, 0.5, 5)
+    d_propuesta9 <- function(x, mean) dmvnorm(x, mean = mean, sigma = matriz_cov)
+    r_propuesta9 <- function(x) rmvnorm(1, mean = x, sigma = matriz_cov)  
+    
+    funcion9 <- sample_mh(d_objetivo9,r_propuesta9,d_propuesta9,c(0,0),n9)
+    muestra9 <- funcion9$muestras
+    grafico9_1 <- plot_trace(muestra9[,1],muestra9[,2])
+    
+    n_eff9_1 <- n_eff(muestra9[,1])
+    n_eff9_2 <- n_eff(muestra9[,2])
+    tasa9 <- funcion9$cant_saltos/n9
+    
+    return(list(grafico = grafico9_1, n1 = n_eff9_1, n2 = n_eff9_2,
+             muestra9 = muestra9, tasa9 = tasa9))
+
+}
+
+
+funcion9_1(matrix(c(0.3, 0.5, 0.5, 0.2), nrow = 2))
 ```
 
