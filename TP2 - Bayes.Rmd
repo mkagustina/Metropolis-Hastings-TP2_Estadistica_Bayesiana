@@ -203,13 +203,13 @@ grafico3_8 <- ggplot()+
   geom_line(aes(y = a3$acf, x = a3$lag)) +
   labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
 
-b3 <- acf(tabla3$muestra[1:5000])
+b3 <- acf(tabla3$muestra[5001:10000])
 
 grafico3_9 <- ggplot()+
   geom_line(aes(y = b3$acf, x = b3$lag)) +
   labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
 
-c3 <- acf(tabla3$muestra[1:5000])
+c3 <- acf(tabla3$muestra[10001:15000])
 
 grafico3_10 <- ggplot()+
   geom_line(aes(y = c3$acf, x = c3$lag)) +
@@ -304,7 +304,7 @@ B <-  function(muestras, M, S) {
 
 r_hat <- function(x) {
   S <- nrow(x)
-  M <- ncol(x)/2
+  M <- ncol(x)
   W <- W(x)
   B <- B(x, M, S)
   
@@ -329,27 +329,14 @@ funcion7_1 <- function(matriz_cov) {
     d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,sigma = matriz_cov)
     r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matriz_cov)  
 
-    muestras <- data.frame(
-      M1_mu1 = numeric(n7),
-      M1_mu2 = numeric(n7),
-      M2_mu1 = numeric(n7),
-      M2_mu2 = numeric(n7),
-      M3_mu1 = numeric(n7),
-      M3_mu2 = numeric(n7)
-    )
-    j <- c(1, 3, 5)
-    for(i in j) {
-      p_inicial7 <- rmvnorm(1, mean = c(0.4,0.75), sigma = diag(1)) 
-      funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,p_inicial7,n7)
-      muestras[,i:i+1] <- funcion7$muestras
-      
-    }
-
-grafico7_1 <- plot_trace(muestras[,1],muestras[,2])
-r_sombrero <- r_hat(muestras)
+funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
+muestra7 <- funcion7$muestras
+grafico7_1 <- plot_trace(muestra7[,1],muestra7[,2])
+r_sombrero <- r_hat(muestra7)
 n_eff7_1 <- n_eff(muestra7[,1])
 n_eff7_2 <- n_eff(muestra7[,2])
- return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2, r = r_sombrero))
+ return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2, r = r_sombrero,
+             muestra7 = muestra7))
 }
 
 #Evalucación de diferentes matrices de variancia y covariancia
@@ -362,9 +349,79 @@ matriz5 <- funcion7_1(matrix(c(5, 0, 0, 6), nrow = 2))
 tabla <- data.frame(
   Matriz = c("1", "2", "3", "4", "5"),
   Num_efectivo_p1 = trunc(c(matriz1$n1, matriz2$n1, matriz3$n1, matriz4$n1, matriz5$n1)),
-  Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2),
-                          )
+  Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2))
 )
 tabla
+#Nos quedariamos con la ultima matriz.
+```
+
+
+```{r}
+#Punto 8: se calculan las probabilidades con la última matriz de var y cov.
+muestra7 <- as.data.frame(matriz5$muestra7)
+colnames(muestra7) <- c("X", "Y")
+
+#Probabilidades estimadas
+#Probabilidad n°1:
+prob1 <- muestra7 %>% 
+  filter(X > 1) %>% 
+  count(Y < 0)
+
+prob1$n[2]/(n7)
+
+
+#Probabilidad n°2:
+prob2 <- muestra7 %>% 
+  filter(X > 1) %>% 
+  count(Y > 2)
+
+prob2$n[2]/(n7)
+
+
+
+#Probabilidad n°3:
+prob3 <- muestra7 %>% 
+  filter(X > 0.4) %>% 
+  count(Y > 0.75)
+
+prob3$n[2]/(n7)
+
+
+
+#Probabilidades reales:
+
+#Probabilidad n°1:
+pmvnorm(lower = c(1, -Inf), upper = c(Inf, 0), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+#Cómo funcionan "lower" y "upper"? 
+#"lower" es un vector que indica los limites inferiores de cada variable: 1 para X y -Infinito para Y; "upper" funciona de manera igual.
+
+
+#Probabilidad n°2:
+pmvnorm(lower = c(1, 2), upper = c(Inf, Inf), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+
+
+#Probabilidad n°3:
+pmvnorm(lower = c(0.4, 0.75), upper = c(Inf, Inf), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+
+```
+
+
+```{r}
+#Punto 9
+
+p_estrella <- function(x, y, a, b){
+  exp(-((((a - x)^2) + b * ((y - x)^2))^2))
+}
+
+d_objetivo9 <- function(x, y) p_estrella(x, y, a, b)
+
+d_propuesta9 <- function()
+r_propuesta9 <- 
 ```
 
