@@ -482,17 +482,17 @@ grafico9_3_2 <- ggplot()+
 ```
 
 
-```{r. echo = T}
+```{r, echo = T}
 grid.arrange(matriz1$grafico, matriz3$grafico, ncol= 2)
 
 tasas <- data.frame(
   Matriz = c("1", "2", "3"),
   Tasa = c(matriz1$tasa9, matriz2$tasa9, matriz3$tasa9)
 )
-tasas
 
 
-grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1)
+grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1, ncol = 3)
+grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3)
 ```
 
 
@@ -500,15 +500,15 @@ grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1)
 
 ```{r}
 #Punto 10
-muestra7 <- as.data.frame(matriz5$muestra7)
-colnames(muestra7) <- c("X", "Y")
+muestra9 <- as.data.frame(matriz1$muestra9)
+colnames(muestra9) <- c("X", "Y")
 
 #Probabilidades estimadas
 #Probabilidad n°1:
-prob1 <- muestra7 %>% 
-  filter(X > 1) %>% 
+prob1 <- muestra9 %>% 
+  filter(X > 1 & X ) %>% 
   count(Y < 0)
 
-prob1$n[2]/(n7)
+prob1$n[2]/(n9)
 ```
 
