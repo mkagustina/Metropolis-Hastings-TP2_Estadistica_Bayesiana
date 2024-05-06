@@ -1,13 +1,21 @@
 ---
-title: "\\vspace{1cm}\n\\begin{tabular}{c}\n{\\normalsize\\textbf{UNIVERSIDAD NACIONAL
-  DE ROSARIO}}\\\\\n{\\Large Facultad de Ciencias Económicas y Estadística}\\\\\n\\\\\n\\includegraphics[width=5cm]{LogoUNR.png}\\\\\n\\vspace{1cm}\n\\\\\n{\\huge\\textbf{\"Metropolis-Hastings\"}}\\\\\n{\\Large
-  Estadística Bayesiana - Trabajo Práctico Nº2}\\\\\n\\end{tabular}\n\\vspace{5cm}\n"
-author: "|"
+title: |
+  \vspace{1cm}
+  \begin{tabular}{c}
+  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
+  {\Large Facultad de Ciencias Económicas y Estadística}\\
+  \\
+  \includegraphics[width=5cm]{LogoUNR.png}\\
+  \vspace{1cm}
+  \\
+  {\huge\textbf{"Metropolis-Hastings"}}\\
+  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
+  \end{tabular}
+  \vspace{5cm}
+author: |
   *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
 date: "Año 2024"
-output:
-  html_document:
-    df_print: paged
+output: pdf_document
 ---
 
 # Introducción
@@ -263,19 +271,19 @@ grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 2: ")
 
 
 #Graficos de autocorrelacion
-a3 <- acf(tabla3$muestra[1:5000], main = "k=4")
+invisible(a3 <- acf(tabla3$muestra[1:5000], main = "k=4"));
 
 grafico3_8 <- ggplot()+
   geom_line(aes(y = a3$acf, x = a3$lag)) +
   labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
 
-b3 <- acf(tabla3$muestra[5001:10000], main = "k=10")
+invisible(b3 <- acf(tabla3$muestra[5001:10000], main = "k=10"));
 
 grafico3_9 <- ggplot()+
   geom_line(aes(y = b3$acf, x = b3$lag)) +
   labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
 
-c3 <- acf(tabla3$muestra[10001:15000], main = "k=20")
+invisible(c3 <- acf(tabla3$muestra[10001:15000], main = "k=20"));
 
 grafico3_10 <- ggplot()+
   geom_line(aes(y = c3$acf, x = c3$lag)) +
