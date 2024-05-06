@@ -1,22 +1,17 @@
 ---
-title: |
-  \vspace{1cm}
-  \begin{tabular}{c}
-  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
-  {\Large Facultad de Ciencias Económicas y Estadística}\\
-  \\
-  \includegraphics[width=5cm]{LogoUNR.png}\\
-  \vspace{1cm}
-  \\
-  {\huge\textbf{"Metropolis-Hastings"}}\\
-  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
-  \end{tabular}
-  \vspace{5cm}
-author: |
+title: "\\vspace{1cm}\n\\begin{tabular}{c}\n{\\normalsize\\textbf{UNIVERSIDAD NACIONAL
+  DE ROSARIO}}\\\\\n{\\Large Facultad de Ciencias Económicas y Estadística}\\\\\n\\\\\n\\includegraphics[width=5cm]{LogoUNR.png}\\\\\n\\vspace{1cm}\n\\\\\n{\\huge\\textbf{\"Metropolis-Hastings\"}}\\\\\n{\\Large
+  Estadística Bayesiana - Trabajo Práctico Nº2}\\\\\n\\end{tabular}\n\\vspace{5cm}\n"
+author: "|"
   *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
 date: "Año 2024"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
+
+# Introducción
+
 
 ```{r setup, warning=FALSE}
 #Librerias
@@ -28,12 +23,38 @@ library(stats)
 library(mvtnorm)
 set.seed(394)
 ```
+# Metropolis-Hastings
 
-```{r}
+El algoritmo de Metropolis-Hastings (MH) permite generar muestras (pseudo-)aleatorias a partir de una distribución de probabilidad $P$ que no necesariamente pertence a una familia de distribuciones conocida. El único requisito es que se pueda evaluar la función de densidad (o de masa de probabilidad) $p^*(\theta)$ en cualquier valor de $\theta$, incluso cuando $p^*(\theta)$ sea impropia (es decir, incluso aunque sea desconocida la constante de normalización que hace que la integral en el soporte de la función sea igual a uno).
+
+Los pasos del algoritmo son: 
+
+1\. Durante la iteración $i$, se encuentra en el valor del parámetro $\theta^{(i)}$.
+
+2\. En función del valor de parámetro actual $\theta^{(i)} = \theta$, se propone un nuevo valor $\theta '$ en función de $q(\theta'|\theta)$.
+
+3\. Se decide si se vá a la nueva ubicación $\theta^{(i+1)} = \theta'$ o si se queda $\theta^{(i+1)} = \theta$:
+
+- Se calcula la probabilidad de salto:
+
+$$\alpha_{\theta \rightarrow \theta'} = \min \left\{1, \frac{f(\theta')}{f(\theta)} \frac{q(\theta|\theta')}{q(\theta'|\theta)}\right\}$$
+
+- Pasar a $\theta'$ con probabilidad $\alpha_{\theta \rightarrow \theta'}$:
+
+$$ \theta^{(i+1)} = \left\{
+\begin{matrix}
+\theta & con & probabilidad & \alpha_{\theta \rightarrow \theta'}   \\
+\theta & con & probabilidad & (1-\alpha_{\theta \rightarrow \theta'})
+\end{matrix}
+\right.$$
+
+A continuación, se presenta la función que implementa el algoritmo de Metropolis-Hastings para tomar muestras de una distribución de probabilidad a partir de su función de densidad. Se otorga flexibilidad al algoritmo permitiendo elegir entre un punto de inicio arbitrario o al azar y utilizar distribuciones de propuesta de transición arbitrarias (por defecto, se utiliza una distribución normal estándar).
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
 
 cant_saltos <- 0
 
-#Punto 1:
+
 sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
   muestras <- matrix(nrow = n, ncol = length(p_inicial))
   muestras[1, ] <- p_inicial
@@ -67,10 +88,32 @@ sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
 }
 
 ```
+# Metropolis-Hastings en 1D
+
+## Distribución de Kumaraswamy
+
+La distribución de Kumaraswamy es una distribución de probabilidad continua que se utiliza para modelar variables aleatorias con soporte en el intervalo $(0,1)$. Si bien graficamente la forma de su función de densidad puede hacer recordar a la distribución beta, vale mencionar que la distribución de Kumaraswamy resulta en una expresión matemática cuyo cómputo es más sencillo:
+
+$$p(x|a,b) = abx^{a-1}(1-x^a)^{b-1}$$
+con $a,b > 0$
+
+A continuación, se grafica la función de densidad de la distribución de Kumaraswamy para las combinaciones de los parámetros:
 
 
+$$
+\begin{array}{cc}
+Combinación & a & b \\
+\hline
+1 & 0.2 & 0.2 \\
+2 & 3 & 3 \\
+3 & 4 & 9 \\
+4 & 10 & 5 \\
+5 & 0.1 & 0.7 \\
+\end{array}
+$$
 
-```{r}
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Punto 2
 # Crear grilla para los valores de "x"
 grid_n <- 200
@@ -80,8 +123,9 @@ kumaraswamy <- function(x, a, b){
   a*b*(x^(a-1))*((1-(x^a))^(b-1))
 }
 
-a <- c(0.2, 3, 4, 10, 1)
-b <- c(0.2, 3, 9, 5, 7)
+a <- c(0.2, 3, 4, 10, 0.1)
+b <- c(0.2, 3, 9, 5, 0.7)
+
 
 #Creamos un data frame para graficar la distribución de Kumaraswamy:
 
@@ -99,11 +143,11 @@ for(i in 1:5) {
 
 # Asigno etiquetas para cada función de kumaraswamy
 levels(data1$Funcion) <- c(
-  expression(alpha ~ " = 0.2," ~ beta ~ "= 0.2"),
-  expression(alpha ~ " = 3," ~ beta ~ "= 3"),
-  expression(alpha ~ " = 4," ~ beta ~ "= 9"),
-  expression(alpha ~ " = 10," ~ beta ~ "5"),
-  expression(alpha ~ " = 1," ~ beta ~ "= 7")
+  expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
+  expression(a ~ " = 3," ~ b ~ "= 3"),
+  expression(a ~ " = 4," ~ b ~ "= 9"),
+  expression(a ~ " = 10," ~ b ~ "= 5"),
+  expression(a ~ " = 0.1," ~ b ~ "= 0.7")
 )
 
 ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
@@ -111,16 +155,37 @@ ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
   facet_wrap(~Funcion, labeller = label_parsed) +
   theme_bw() +
   labs(x = "x",
-       caption = "Gráfico 1: distribución Kumaraswamy con distintos parámetros") + 
+       caption = "Gráfico 1: distribución Kumaraswamy con distintas combinaciones de los parámetros a y b") + 
   theme(
     strip.background = element_rect(fill = "olivedrab3"),
     plot.caption = element_text(hjust = 0.5)
   )
 
 ```
+En el gráfico 1 se puede apreciar las distintas formas que toman las curvas de la distribución Kumaraswamy dependiendo de los parámetros a y b que se elijan. 
+El parámetro $a$ controla la asimetría de la curva. 
+El parámetro $b$ controla la curvatura de la gráfica.
+Se espera que si $a = b$, la curva sea simétrica. Si $a > b$, la curva se inclina hacia la derecha. Si $a < b$, la curva se inclina hacia la izquierda.
+Se observa que:
+- Si los parámetros son iguales y menores a 1, la curva es simétrica y tiene forma de U. 
+- Si los parámetros son iguales y mayores a 1, la curva es simétrica y tiene forma de campana.
+- Si ambos parámetros son mayores a 1 y $a < b$, la curva tiene forma de campana.
+- Si ambos parámetros son mayores a 1 y $a > b$, la curva es asimétrica a la izquierda y tiene forma de campana.
+- Si los dos parámetros son menores a 1 y $a < b$, la curva tiene forma de U y es más aplastada del lado derecho. 
 
 
-```{r}
+**FALTA PONER LA UTILIDAD QUE TIENE EN ESTADISTICA BAYESIANA**
+
+Utilizando la función construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$. Como distribución propuesta se utiliza una beta con los siguientes grados de concentración: 
+
+$$
+\begin{array}{cc}
+Concentración & 4 & 10 & 20 \\
+\end{array}
+$$
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Punto 3
 concentracion3 <- c(4,10,20)
 tabla3 <- data.frame ( 
@@ -194,28 +259,29 @@ grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo3) +
 grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo3) +
   labs (title = "k=20", x = "Muestras", y = "Densidad")
 
-grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1)
+grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 2: ")
+
 
 #Graficos de autocorrelacion
-a3 <- acf(tabla3$muestra[1:5000])
+a3 <- acf(tabla3$muestra[1:5000], main = "k=4")
 
 grafico3_8 <- ggplot()+
   geom_line(aes(y = a3$acf, x = a3$lag)) +
   labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
 
-b3 <- acf(tabla3$muestra[5001:10000])
+b3 <- acf(tabla3$muestra[5001:10000], main = "k=10")
 
 grafico3_9 <- ggplot()+
   geom_line(aes(y = b3$acf, x = b3$lag)) +
   labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
 
-c3 <- acf(tabla3$muestra[10001:15000])
+c3 <- acf(tabla3$muestra[10001:15000], main = "k=20")
 
 grafico3_10 <- ggplot()+
   geom_line(aes(y = c3$acf, x = c3$lag)) +
   labs (title = "k=20", x = "Rezago", y = "Autocorrelación")
 
-grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1)
+grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 3: ") 
 ```
 
 
