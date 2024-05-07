@@ -31,9 +31,10 @@ library(stats)
 library(mvtnorm)
 set.seed(394)
 ```
-# Metropolis-Hastings
 
 El algoritmo de Metropolis-Hastings (MH) permite generar muestras (pseudo-)aleatorias a partir de una distribución de probabilidad $P$ que no necesariamente pertence a una familia de distribuciones conocida. El único requisito es que se pueda evaluar la función de densidad (o de masa de probabilidad) $p^*(\theta)$ en cualquier valor de $\theta$, incluso cuando $p^*(\theta)$ sea impropia (es decir, incluso aunque sea desconocida la constante de normalización que hace que la integral en el soporte de la función sea igual a uno).
+
+
 
 Los pasos del algoritmo son: 
 
@@ -394,6 +395,15 @@ Al hacer uso de todo el eje real mediante el $logit(x)$, se observa que la media
 
 Al analizar las distintas muestras de distribución Kumaraswamy de parámetros $a=6$ y $b=2$ con propuesta beta de distintas concentraciones, no se encontraron grandes diferencias entre éstas. No es posible decidir con certeza cuál de los valores de concentración es mejor, debido a que las diferencias obtenidas han sido muy pequeñas. Sin embargo, si habría que sugerir un valor de concentración, se sugiere el 10. Esto es debido a que tiene una tasa de aceptación moderada (0.65), el algoritmo no se estanca demasiado en los mismos valores de $\theta$, la muestra explora el rango completo de la distribución a posteriori y se ajusta bien a la curva. Además, la autocorrelación decrece rápidamente y es menor a 0.25 a partir del rezago 6. 
 
+# Metropolis-Hastings en 2D
+
+La verdadera utilidad del algoritmo de Metropolis-Hastings se aprecia cuando se obtienen muestras de distribuciones en más de una dimensión, incluso cuando no se conoce la constante de normalización. En esta sección se trabaja con ejemplos que permitirán advertir las limitaciones del algoritmo y motivarán la búsqueda de mejores alternativas.
+
+## Normal multivariada
+
+La distribución normal multivariada es la generalización de la distribución normal univariada a múltiples dimensiones (o mejor dicho, el caso en una dimensión es un caso particular de la distribución en múltiples dimensiones). La función de densidad de la distribución normal en $k$ dimensiones es:
+
+
 
 ```{r}
 #Paso 7
@@ -670,5 +680,44 @@ prob3$n[2]/(n9)
 
 #Creación de grillas para los parámetros
 grid_a <- seq()
+```
+Se vuelven a calcular las probabilidades anteriores, esta vez utilizando la integración de Monte Carlo:
+```{r}
+# Punto 11
+# Calculo P(0<X1<1, 0<X2<1)
+
+k <- 10000
+u <- matrix(runif(k*2), ncol = 2)
+p_estrella_eval <- numeric(k)
+
+for (i in 1:k) {
+  p_estrella_eval[i] <- p_estrella(u[i,], 0.5, 5)
+}
+
+rdo_prob1 <- mean(p_estrella_eval)
+
+# Calculo P(-1<X1<0, 0<X2<1)
+
+u <- matrix(c(runif(k, min = -1, max = 0),
+              runif(k, min = 0, max = 1)),
+            ncol = 2)
+
+for (i in 1:k) {
+  p_estrella_eval[i] <- p_estrella(u[i,], 0.5, 5)
+}
+
+rdo_prob2 <- mean(p_estrella_eval)
+
+# Calculo P(1<X1<2, 2<X2<3)
+
+u <- matrix(c(runif(k, min = 1, max = 2),
+              runif(k, min = 2, max = 3)),
+            ncol = 2)
+
+for (i in 1:k) {
+  p_estrella_eval[i] <- p_estrella(u[i,], 0.5, 5)
+}
+
+rdo_prob3 <- mean(p_estrella_eval)
 ```
 
