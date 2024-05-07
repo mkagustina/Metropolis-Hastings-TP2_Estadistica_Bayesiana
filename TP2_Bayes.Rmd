@@ -1,0 +1,586 @@
+---
+title: |
+  \vspace{1cm}
+  \begin{tabular}{c}
+  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
+  {\Large Facultad de Ciencias Económicas y Estadística}\\
+  \\
+  \includegraphics[width=5cm]{LogoUNR.png}\\
+  \vspace{1cm}
+  \\
+  {\huge\textbf{"Metropolis-Hastings"}}\\
+  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
+  \end{tabular}
+  \vspace{5cm}
+author: |
+  *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
+date: "Año 2024"
+output: pdf_document
+---
+
+# Introducción
+
+```{r setup, warning=FALSE}
+#Librerias
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(kableExtra)
+library(stats)
+library(mvtnorm)
+set.seed(394)
+```
+
+# Metropolis-Hastings
+
+El algoritmo de Metropolis-Hastings (MH) permite generar muestras (pseudo-)aleatorias a partir de una distribución de probabilidad $P$ que no necesariamente pertence a una familia de distribuciones conocida. El único requisito es que se pueda evaluar la función de densidad (o de masa de probabilidad) $p^*(\theta)$ en cualquier valor de $\theta$, incluso cuando $p^*(\theta)$ sea impropia (es decir, incluso aunque sea desconocida la constante de normalización que hace que la integral en el soporte de la función sea igual a uno).
+
+Los pasos del algoritmo son:
+
+1\. Durante la iteración $i$, se encuentra en el valor del parámetro $\theta^{(i)}$.
+
+2\. En función del valor de parámetro actual $\theta^{(i)} = \theta$, se propone un nuevo valor $\theta '$ en función de $q(\theta'|\theta)$.
+
+3\. Se decide si se vá a la nueva ubicación $\theta^{(i+1)} = \theta'$ o si se queda $\theta^{(i+1)} = \theta$:
+
+-   Se calcula la probabilidad de salto:
+
+$$\alpha_{\theta \rightarrow \theta'} = \min \left\{1, \frac{f(\theta')}{f(\theta)} \frac{q(\theta|\theta')}{q(\theta'|\theta)}\right\}$$
+
+-   Pasar a $\theta'$ con probabilidad $\alpha_{\theta \rightarrow \theta'}$:
+
+$$ \theta^{(i+1)} = \left\{
+\begin{matrix}
+\theta & con & probabilidad & \alpha_{\theta \rightarrow \theta'}   \\
+\theta & con & probabilidad & (1-\alpha_{\theta \rightarrow \theta'})
+\end{matrix}
+\right.$$
+
+A continuación, se presenta la función que implementa el algoritmo de Metropolis-Hastings para tomar muestras de una distribución de probabilidad a partir de su función de densidad. Se otorga flexibilidad al algoritmo permitiendo elegir entre un punto de inicio arbitrario o al azar y utilizar distribuciones de propuesta de transición arbitrarias (por defecto, se utiliza una distribución normal estándar).
+
+```{r, echo=TRUE, warning=FALSE, message=FALSE}
+
+cant_saltos <- 0
+
+
+sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
+  muestras <- matrix(nrow = n, ncol = length(p_inicial))
+  muestras[1, ] <- p_inicial
+  
+  for(i in 2:n) {
+    p_actual <- muestras[i-1,]
+    p_nuevo <- r_propuesta(p_actual)
+    
+    f_nuevo <- d_objetivo(p_nuevo)
+    f_actual <- d_objetivo(p_actual)
+    
+    q_actual <- d_propuesta(p_actual, mean = p_nuevo)
+    q_nuevo <- d_propuesta(p_nuevo, mean = p_actual)
+    
+    alpha <- min(1, (f_nuevo/f_actual)*(q_actual/q_nuevo))
+    aceptar <- rbinom(1, 1, alpha)
+    
+    if(aceptar) { 
+      muestras[i,] <- p_nuevo
+      cant_saltos <- cant_saltos + 1
+      
+    } else {
+      muestras[i,] <- p_actual
+    }
+  }
+  
+  if (ncol(muestras) == 1) {
+    muestras <- as.vector(muestras)
+  } 
+  return(list(muestras=muestras,cant_saltos=cant_saltos))
+}
+
+```
+
+# Metropolis-Hastings en 1D
+
+## Distribución de Kumaraswamy
+
+La distribución de Kumaraswamy es una distribución de probabilidad continua que se utiliza para modelar variables aleatorias con soporte en el intervalo $(0,1)$. Si bien graficamente la forma de su función de densidad puede hacer recordar a la distribución beta, vale mencionar que la distribución de Kumaraswamy resulta en una expresión matemática cuyo cómputo es más sencillo:
+
+$$p(x|a,b) = abx^{a-1}(1-x^a)^{b-1}$$ con $a,b > 0$
+
+A continuación, se grafica la función de densidad de la distribución de Kumaraswamy para las combinaciones de los parámetros:
+
+$$
+\begin{array}{cc}
+Combinación & a & b \\
+\hline
+1 & 0.2 & 0.2 \\
+2 & 3 & 3 \\
+3 & 4 & 9 \\
+4 & 10 & 5 \\
+5 & 0.1 & 0.7 \\
+\end{array}
+$$
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+#Punto 2
+# Crear grilla para los valores de "x"
+grid_n <- 200
+x_grid <- seq(0, 1, length.out = grid_n)
+
+kumaraswamy <- function(x, a, b){
+  a*b*(x^(a-1))*((1-(x^a))^(b-1))
+}
+
+a <- c(0.2, 3, 4, 10, 0.1)
+b <- c(0.2, 3, 9, 5, 0.7)
+
+
+#Creamos un data frame para graficar la distribución de Kumaraswamy:
+
+data1 <- data.frame(
+  Funcion = as.factor(rep(1:5, each = grid_n)),
+  Densidad = numeric(5 * grid_n),
+  Grilla = rep(x_grid, times = 5)
+) 
+
+#Completamos el data frame con las densidades:
+for(i in 1:5) {
+    indices <- seq(from = 1 + (i - 1) * 200, to = 200 + (i - 1) * 200)
+    data1$Densidad[indices] <- kumaraswamy(x_grid, a[i], b[i])
+}
+
+# Asigno etiquetas para cada función de kumaraswamy
+levels(data1$Funcion) <- c(
+  expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
+  expression(a ~ " = 3," ~ b ~ "= 3"),
+  expression(a ~ " = 4," ~ b ~ "= 9"),
+  expression(a ~ " = 10," ~ b ~ "= 5"),
+  expression(a ~ " = 0.1," ~ b ~ "= 0.7")
+)
+
+ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
+  geom_line(size = 0.55) +
+  facet_wrap(~Funcion, labeller = label_parsed) +
+  theme_bw() +
+  labs(x = "x",
+       caption = "Gráfico 1: distribución Kumaraswamy con distintas combinaciones de los parámetros a y b") + 
+  theme(
+    strip.background = element_rect(fill = "olivedrab3"),
+    plot.caption = element_text(hjust = 0.5)
+  )
+
+```
+
+En el gráfico 1 se puede apreciar las distintas formas que toman las curvas de la distribución Kumaraswamy dependiendo de los parámetros a y b que se elijan. El parámetro $a$ controla la asimetría de la curva. El parámetro $b$ controla la curvatura de la gráfica. Se espera que si $a = b$, la curva sea simétrica. Si $a > b$, la curva se inclina hacia la derecha. Si $a < b$, la curva se inclina hacia la izquierda. Se observa que: - Si los parámetros son iguales y menores a 1, la curva es simétrica y tiene forma de U. - Si los parámetros son iguales y mayores a 1, la curva es simétrica y tiene forma de campana. - Si ambos parámetros son mayores a 1 y $a < b$, la curva tiene forma de campana. - Si ambos parámetros son mayores a 1 y $a > b$, la curva es asimétrica a la izquierda y tiene forma de campana. - Si los dos parámetros son menores a 1 y $a < b$, la curva tiene forma de U y es más aplastada del lado derecho.
+
+**FALTA PONER LA UTILIDAD QUE TIENE EN ESTADISTICA BAYESIANA**
+
+Utilizando la función construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$. Como distribución propuesta se utiliza una beta con los siguientes grados de concentración:
+
+$$
+\begin{array}{cc}
+Concentración & 4 & 10 & 20 \\
+\end{array}
+$$
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Punto 3
+concentracion3 <- c(4,10,20)
+tabla3 <- data.frame ( 
+  concentracion = rep(concentracion3, each = 5000),
+  muestra = numeric(15000)
+  )
+tasa3 <- numeric(3)
+
+for (i in 1:3) {
+#Funciones a usar
+d_objetivo3 <- function(x) kumaraswamy(x, 6, 2)
+d_propuesta3 <- function(x, mean) dbeta(x, shape1 = mean * concentracion3[i], shape2 = (1-mean) * concentracion3[i])
+r_propuesta3 <- function(x) rbeta(1, shape1 = x * concentracion3[i], shape2 = (1-x) * concentracion3[i])
+#Donde x hace referencia a mu
+n3 <- 5000
+p_inicial3 <- rbeta(1,shape1=2,shape2=2)
+funcion3 <- sample_mh(d_objetivo3, r_propuesta3, d_propuesta3, p_inicial3, n3)
+indices <- seq(from = 1 + (i - 1) * 5000, to = 5000 + (i - 1) * 5000)
+tabla3$muestra[indices] <- funcion3$muestras
+
+tasa3[i] <- funcion3$cant_saltos/n3
+} 
+
+#Tasa de aceptacion
+tabla3_2 <- data.frame(
+  Concentracion = c("4","10","20"),
+  Tasa_de_aceptacion = tasa3
+) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Pie tabla")
+
+#Gata peluda junta
+# Agrego una columna con el orden de las muestras
+tabla3$orden <- rep(1:5000, times = 3)
+tabla3$concentracion <- as.factor(tabla3$concentracion) 
+
+
+# Gráfico con múltiples líneas
+grafico3_1 <- ggplot(data = tabla3, aes(x = orden, y = muestra, group = concentracion, color = concentracion)) +
+  geom_line() +
+  theme_bw() +
+  labs(x = "x", y = "y", color = "Group", caption = "Título grafico") +
+  theme(legend.position = "top")  
+  
+#Trace plots
+plot_trace <- function(x){
+  data.frame(x = seq_along(x), y = x) %>% 
+    ggplot() +
+    geom_line(aes(x = x, y = y))
+}
+
+grafico3_2 <- plot_trace(tabla3$muestra[1:5000]) + labs (caption = "Titulo grafico")
+grafico3_3 <- plot_trace(tabla3$muestra[5001:10000]) + labs (caption = "Titulo grafico")
+grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) + labs (caption = "Titulo grafico")
+
+#Histogramas
+plot_hist <- function(x, d_objetivo3) {
+  x_seq <- seq(min(x), max(x), length.out = n3)
+  df_hist <- data.frame(x = x)
+  df_line <- data.frame(x = x_seq, y = d_objetivo3(x_seq))
+  
+  ggplot(df_hist)+
+    geom_histogram(aes(x = x, y =after_stat(density))) +
+    geom_line(aes(x = x, y = y), data = df_line, color = "red")
+}
+grafico3_5 <- plot_hist(tabla3$muestra[1:5000],d_objetivo3) +
+  labs (title = "k=4", x = "Muestras", y = "Densidad")
+grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo3) +
+  labs (title = "k=10", x = "Muestras", y = "Densidad")
+grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo3) +
+  labs (title = "k=20", x = "Muestras", y = "Densidad")
+
+grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 2: ")
+
+
+#Graficos de autocorrelacion
+invisible(a3 <- acf(tabla3$muestra[1:5000], main = "k=4"));
+
+grafico3_8 <- ggplot()+
+  geom_line(aes(y = a3$acf, x = a3$lag)) +
+  labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
+
+invisible(b3 <- acf(tabla3$muestra[5001:10000], main = "k=10"));
+
+grafico3_9 <- ggplot()+
+  geom_line(aes(y = b3$acf, x = b3$lag)) +
+  labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
+
+invisible(c3 <- acf(tabla3$muestra[10001:15000], main = "k=20"));
+
+grafico3_10 <- ggplot()+
+  geom_line(aes(y = c3$acf, x = c3$lag)) +
+  labs (title = "k=20", x = "Rezago", y = "Autocorrelación")
+
+grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 3: ") 
+```
+
+```{r}
+#Punto 4
+muestra4_1 <- tabla3$muestra[1:5000]
+muestra4_2 <- tabla3$muestra[5001:10000]
+muestra4_3 <- tabla3$muestra[10001:15000]
+
+#Calculo de la media y los percentiles 5 y 95 para X:
+medias <- c(mean(muestra4_1), mean(muestra4_2), mean(muestra4_3))
+percentiles <- data.frame(
+  Muestra = c("1", "2", "3"),
+  Percentile_5 = c(quantile(muestra4_1, prob = c(0.05)),
+                  quantile(muestra4_2, prob = c(0.05)),
+                  quantile(muestra4_3, prob = c(0.05))
+                  ),
+  Percentil_95 = c(quantile(muestra4_1, prob = c(0.95)),
+                  quantile(muestra4_2, prob = c(0.95)),
+                  quantile(muestra4_3, prob = c(0.95))
+                  )
+)
+
+#Cálculo de la media y los percentiles 5 y 95 para logit(X):
+l_m1 <- log((muestra4_1/(1-muestra4_1)))
+l_m2 <- log((muestra4_2/(1-muestra4_2)))
+l_m3 <- log((muestra4_3/(1-muestra4_3)))
+
+
+medias_l <- c(mean(l_m1), mean(l_m2), mean(l_m3))
+percentiles_l <- data.frame(
+  Muestra = c("1", "2", "3"),
+  Percentile_5 = c(quantile(l_m1, prob = c(0.05)),
+                  quantile(l_m2, prob = c(0.05)),
+                  quantile(l_m3, prob = c(0.05))
+                  ),
+  Percentil_95 = c(quantile(l_m1, prob = c(0.95)),
+                  quantile(l_m2, prob = c(0.95)),
+                  quantile(l_m3, prob = c(0.95))
+                  )
+)
+
+
+
+```
+
+```{r}
+#Paso 7
+
+# Funciones a utilizar
+#1.Trace plot
+plot_trace <- function(x, y) {
+  n <- length(x)
+  df <- data.frame(
+    x = rep(1:n, 2),
+    y = c(x,y),
+    dimension = rep(1:2, each = n)
+  )
+  
+  ggplot(df) + 
+    geom_line(aes(x = x, y = y)) +
+    facet_grid(rows = vars(dimension))
+}
+
+
+#2. Cálculo de R sombrero
+
+W <- function(muestras) {
+  
+  mean(apply(muestras, 2, var))
+ 
+}
+
+
+B <-  function(muestras, M, S) {
+  media_g <- mean(muestras)
+  media_cadena <- mean(apply(muestras, 2, mean))
+  
+  
+  b <- (S/(M-1))* sum((media_cadena-media_g)^2)
+  #S = cantidad observaciones
+  #M = cantidad muestras
+  return(b)
+}
+
+
+r_hat <- function(x) {
+  S <- nrow(x)
+  M <- ncol(x)
+  W <- W(x)
+  B <- B(x, M, S)
+  
+  sqrt(((S/(S-1))*W + (1/S)*B)/W)
+}
+
+#3. Número efectivo de muestras
+n_eff <- function(muestras){
+  S <- length(muestras)
+  autocorr <- acf(muestras, plot = F, lag = Inf)$acf
+  limite <- which((autocorr < 0.001))[1] #sumamos hasta ese valor
+  denom <- 1 + 2 * sum(autocorr[2:limite])
+  
+  S/denom
+  
+}
+
+
+n7 <- 5000
+funcion7_1 <- function(matriz_cov) {
+    d_objetivo7 <- function(x) dmvnorm(x,c(0.4,0.75),matrix(c(1.35,0.4,0.4,2.4),nrow=2))
+    d_propuesta7 <- function(x, mean) dmvnorm(x,mean = mean ,sigma = matriz_cov)
+    r_propuesta7 <- function(x) rmvnorm(1, mean = x, sigma = matriz_cov)  
+
+
+funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
+muestra7 <- funcion7$muestras
+grafico7_1 <- plot_trace(muestra7[,1],muestra7[,2])
+r_sombrero <- r_hat(muestra7)
+n_eff7_1 <- n_eff(muestra7[,1])
+n_eff7_2 <- n_eff(muestra7[,2])
+ return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2, r = r_sombrero,
+             muestra7 = muestra7))
+
+}
+
+#Evalucación de diferentes matrices de variancia y covariancia
+matriz1 <- funcion7_1(matrix(c(2, 0.5, 0.5, 3), nrow = 2))
+matriz2 <- funcion7_1(matrix(c(2, 0, 0, 3), nrow = 2))
+matriz3 <- funcion7_1(matrix(c(0.4, 0, 0, 0.4), nrow = 2))
+matriz4 <- funcion7_1(matrix(c(1, 0, 0, 1), nrow = 2))
+matriz5 <- funcion7_1(matrix(c(5, 0, 0, 6), nrow = 2))
+
+tabla <- data.frame(
+  Matriz = c("1", "2", "3", "4", "5"),
+  Num_efectivo_p1 = trunc(c(matriz1$n1, matriz2$n1, matriz3$n1, matriz4$n1, matriz5$n1)),
+  Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2))
+)
+tabla
+#Nos quedariamos con la ultima matriz.
+```
+
+```{r}
+#Punto 8: se calculan las probabilidades con la última matriz de var y cov.
+muestra7 <- as.data.frame(matriz5$muestra7)
+colnames(muestra7) <- c("X", "Y")
+
+#Probabilidades estimadas
+#Probabilidad n°1:
+prob1 <- muestra7 %>% 
+  filter(X > 1) %>% 
+  count(Y < 0)
+
+prob1$n[2]/(n7)
+
+
+#Probabilidad n°2:
+prob2 <- muestra7 %>% 
+  filter(X > 1) %>% 
+  count(Y > 2)
+
+prob2$n[2]/(n7)
+
+
+
+#Probabilidad n°3:
+prob3 <- muestra7 %>% 
+  filter(X > 0.4) %>% 
+  count(Y > 0.75)
+
+prob3$n[2]/(n7)
+
+
+
+#Probabilidades reales:
+
+#Probabilidad n°1:
+pmvnorm(lower = c(1, -Inf), upper = c(Inf, 0), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+#Cómo funcionan "lower" y "upper"? 
+#"lower" es un vector que indica los limites inferiores de cada variable: 1 para X y -Infinito para Y; "upper" funciona de manera igual.
+
+
+#Probabilidad n°2:
+pmvnorm(lower = c(1, 2), upper = c(Inf, Inf), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+
+
+#Probabilidad n°3:
+pmvnorm(lower = c(0.4, 0.75), upper = c(Inf, Inf), 
+        mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
+
+
+```
+
+```{r}
+#Punto 9
+
+p_estrella <- function(x, a, b){
+  exp(-((((a - x[1])^2) + b * ((x[2] - x[1])^2))^2))
+}
+
+
+
+n9 <- 5000
+
+funcion9_1 <- function(matriz_cov) {
+    d_objetivo9 <- function(x) p_estrella(x, 0.5, 5)
+    d_propuesta9 <- function(x, mean) dmvnorm(x, mean = mean, sigma = matriz_cov)
+    r_propuesta9 <- function(x) rmvnorm(1, mean = x, sigma = matriz_cov)  
+    
+    funcion9 <- sample_mh(d_objetivo9,r_propuesta9,d_propuesta9,c(0,0),n9)
+    muestra9 <- funcion9$muestras
+    grafico9_1 <- plot_trace(muestra9[,1],muestra9[,2])
+    
+    n_eff9_1 <- n_eff(muestra9[,1])
+    n_eff9_2 <- n_eff(muestra9[,2])
+    tasa9 <- funcion9$cant_saltos/n9
+    autocorr_1 <- acf(muestra9[,1], plot = F)
+    autocorr_2 <- acf(muestra9[,2], plot = F)
+    
+    return(list(grafico = grafico9_1, n1 = n_eff9_1, n2 = n_eff9_2,
+             muestra9 = muestra9, tasa9 = tasa9, autocorr_p1 = autocorr_1,
+             autocorr_p2 = autocorr_2))
+
+}
+
+
+matriz1 <- funcion9_1(matrix(c(0.3, 0.1, 0.1, 0.2), nrow = 2))
+matriz2 <- funcion9_1(matrix(c(2, 0, 0, 2), nrow = 2))
+matriz3 <- funcion9_1(matrix(c(4, 1, 1, 4), nrow = 2))
+
+
+
+grafico9_1_1 <- ggplot()+
+  geom_line(aes(y = matriz1$autocorr_p1$acf, x = matriz1$autocorr_p1$lag)) +
+  labs (title = "Autocorrelación para 'a' ", x = "Rezago", y = "Autocorrelación")
+
+grafico9_1_2 <- ggplot()+
+  geom_line(aes(y = matriz1$autocorr_p2$acf, x = matriz1$autocorr_p2$lag)) +
+  labs (title = "Autocorrelación para 'b' ", x = "Rezago", y = "Autocorrelación")
+
+
+grafico9_2_1 <- ggplot()+
+  geom_line(aes(y = matriz2$autocorr_p1$acf, x = matriz2$autocorr_p1$lag)) +
+  labs (title = "Autocorrelación para 'a' ", x = "Rezago", y = "Autocorrelación")
+
+grafico9_2_2 <- ggplot()+
+  geom_line(aes(y = matriz2$autocorr_p2$acf, x = matriz2$autocorr_p2$lag)) +
+  labs (title = "Autocorrelación para 'b' ", x = "Rezago", y = "Autocorrelación")
+
+grafico9_3_1 <- ggplot()+
+  geom_line(aes(y = matriz3$autocorr_p1$acf, x = matriz3$autocorr_p1$lag)) +
+  labs (title = "Autocorrelación para 'a' ", x = "Rezago", y = "Autocorrelación")
+
+
+grafico9_3_2 <- ggplot()+
+  geom_line(aes(y = matriz3$autocorr_p2$acf, x = matriz3$autocorr_p2$lag)) +
+  labs (title = "Autocorrelación para 'b' ", x = "Rezago", y = "Autocorrelación")
+```
+
+```{r, echo = T}
+grid.arrange(matriz1$grafico, matriz3$grafico, ncol= 2)
+
+tasas <- data.frame(
+  Matriz = c("1", "2", "3"),
+  Tasa = c(matriz1$tasa9, matriz2$tasa9, matriz3$tasa9)
+)
+
+
+grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1, ncol = 3)
+grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3)
+```
+
+```{r}
+#Punto 10
+muestra9 <- as.data.frame(matriz1$muestra9)
+colnames(muestra9) <- c("X", "Y")
+
+#Probabilidades estimadas
+#Probabilidad n°1:
+prob1 <- muestra9 %>% 
+  filter(X > 0 & X < 1 ) %>% 
+  count(Y < 1 & Y > 0)
+
+prob1$n[2]/(n9)
+
+
+
+#Probabilidad n°2:
+prob2 <- muestra9 %>% 
+  filter(X > -1 & X < 0 ) %>% 
+  count(Y < 1 & Y > 0)
+
+prob2$n[2]/(n9)
+
+
+
+
+#Probabilidad n°3:
+prob3 <- muestra9 %>% 
+  filter(X > 1 & X < 2 ) %>% 
+  count(Y < 3 & Y > 2)
+
+prob3$n[2]/(n9)
+```
