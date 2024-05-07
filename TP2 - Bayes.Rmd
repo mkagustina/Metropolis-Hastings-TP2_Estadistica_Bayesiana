@@ -638,9 +638,37 @@ colnames(muestra9) <- c("X", "Y")
 #Probabilidades estimadas
 #Probabilidad n°1:
 prob1 <- muestra9 %>% 
-  filter(X > 1 & X ) %>% 
-  count(Y < 0)
+  filter(X > 0 & X < 1 ) %>% 
+  count(Y < 1 & Y > 0)
 
 prob1$n[2]/(n9)
+
+
+
+#Probabilidad n°2:
+prob2 <- muestra9 %>% 
+  filter(X > -1 & X < 0 ) %>% 
+  count(Y < 1 & Y > 0)
+
+prob2$n[2]/(n9)
+
+
+
+
+#Probabilidad n°3:
+prob3 <- muestra9 %>% 
+  filter(X > 1 & X < 2 ) %>% 
+  count(Y < 3 & Y > 2)
+
+prob3$n[2]/(n9)
+
+
+
+{r}
+#Punto 11
+#Aproximación por el método de la grilla:
+
+#Creación de grillas para los parámetros
+grid_a <- seq()
 ```
 
