@@ -113,10 +113,10 @@ $$
 Combinación & a & b \\
 \hline
 1 & 0.2 & 0.2 \\
-2 & 3 & 3 \\
-3 & 4 & 9 \\
-4 & 10 & 5 \\
-5 & 0.1 & 0.7 \\
+2 & 0.1 & 0.7 \\
+3 & 3 & 3 \\
+4 & 4 & 9 \\
+5 & 10 & 5 \\
 \end{array}
 $$
 
@@ -131,8 +131,8 @@ kumaraswamy <- function(x, a, b){
   a*b*(x^(a-1))*((1-(x^a))^(b-1))
 }
 
-a <- c(0.2, 3, 4, 10, 0.1)
-b <- c(0.2, 3, 9, 5, 0.7)
+a <- c(0.2, 0.1, 3, 4, 10)
+b <- c(0.2, 0.7, 3, 9, 5)
 
 
 #Creamos un data frame para graficar la distribución de Kumaraswamy:
@@ -152,10 +152,10 @@ for(i in 1:5) {
 # Asigno etiquetas para cada función de kumaraswamy
 levels(data1$Funcion) <- c(
   expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
+  expression(a ~ " = 0.1," ~ b ~ "= 0.7"),
   expression(a ~ " = 3," ~ b ~ "= 3"),
   expression(a ~ " = 4," ~ b ~ "= 9"),
-  expression(a ~ " = 10," ~ b ~ "= 5"),
-  expression(a ~ " = 0.1," ~ b ~ "= 0.7")
+  expression(a ~ " = 10," ~ b ~ "= 5")
 )
 
 ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
@@ -176,13 +176,16 @@ El parámetro $b$ controla la curvatura de la gráfica.
 Se espera que si $a = b$, la curva sea simétrica. Si $a > b$, la curva se inclina hacia la derecha. Si $a < b$, la curva se inclina hacia la izquierda.
 Se observa que:
 - Si los parámetros son iguales y menores a 1, la curva es simétrica y tiene forma de U. 
+- Si los dos parámetros son menores a 1 y $a < b$, la curva tiene forma de U y es más aplastada del lado derecho. 
 - Si los parámetros son iguales y mayores a 1, la curva es simétrica y tiene forma de campana.
 - Si ambos parámetros son mayores a 1 y $a < b$, la curva tiene forma de campana.
 - Si ambos parámetros son mayores a 1 y $a > b$, la curva es asimétrica a la izquierda y tiene forma de campana.
-- Si los dos parámetros son menores a 1 y $a < b$, la curva tiene forma de U y es más aplastada del lado derecho. 
 
 
-**FALTA PONER LA UTILIDAD QUE TIENE EN ESTADISTICA BAYESIANA**
+Conocer las distintas formas que puede tomar la curva de la distribución de Kumaraswamy según los parámetros $a$ y $b$ es útil en Estadística Bayesiana porque:
+- Facilita la elección de un prior que refleje adecuadamente las creencias previas sobre los parámetros del modelo. Esto es crucial para obtener inferencias precisas y robustas.
+- Permite adapar el modelo a diferentes tipos de datos, ya que la distribución puede variar ampliamente de forma dependiendo de los valores de $a$ y $b$.
+-Ayuda a comprender cómo los valores de los parámetros afectan el posterior y, por lo tanto, las conclusiones que se pueden extraer del análisis.
 
 Utilizando la función construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$. Como distribución propuesta se utiliza una beta con los siguientes grados de concentración: 
 
@@ -191,7 +194,9 @@ $$
 Concentración & 4 & 10 & 20 \\
 \end{array}
 $$
+Como punto inicial del algoritmo de MH, se obtiene un valor aleatorio de una distribución $beta(2,2)$
 
+La tasa de aceptación en el algoritmo de Metropolis-Hastings indica qué tan frecuentemente se aceptan los nuevos $\theta$ propuestos, en relación al total de $\theta$ propuestos.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Punto 3
@@ -224,7 +229,16 @@ tabla3_2 <- data.frame(
 ) %>%
   kable() %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
-  add_footnote("Pie tabla")
+  add_footnote("Tabla 1: Tasa de aceptación")
+
+print (tabla3_2)
+```
+
+En la tabla 1 se observa que, a mayor concentración de la distribución propuesta beta, mayor es la tasa de aceptación.
+ 
+A continuación, una representación gráfica que muestra cómo evolucionan las muestras generadas por el algoritmo a lo largo del tiempo.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 #Gata peluda junta
 # Agrego una columna con el orden de las muestras
@@ -236,9 +250,11 @@ tabla3$concentracion <- as.factor(tabla3$concentracion)
 grafico3_1 <- ggplot(data = tabla3, aes(x = orden, y = muestra, group = concentracion, color = concentracion)) +
   geom_line() +
   theme_bw() +
-  labs(x = "x", y = "y", color = "Group", caption = "Título grafico") +
+  labs(x = "x", y = "y", color = "Group", caption = "Gráfico: Trace plot para las 3 concentraciones") +
   theme(legend.position = "top")  
-  
+
+
+
 #Trace plots
 plot_trace <- function(x){
   data.frame(x = seq_along(x), y = x) %>% 
@@ -246,9 +262,20 @@ plot_trace <- function(x){
     geom_line(aes(x = x, y = y))
 }
 
-grafico3_2 <- plot_trace(tabla3$muestra[1:5000]) + labs (caption = "Titulo grafico")
-grafico3_3 <- plot_trace(tabla3$muestra[5001:10000]) + labs (caption = "Titulo grafico")
-grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) + labs (caption = "Titulo grafico")
+grafico3_2 <- plot_trace(tabla3$muestra[1:5000]) +
+              labs(x = "i", y = expression(theta), title = "k=4")
+grafico3_3 <- plot_trace(tabla3$muestra[5001:10000]) +
+              labs(x = "i", y = expression(theta), title = "k=10")
+grafico3_4 <- plot_trace(tabla3$muestra[10001:15000]) +
+              labs(x = "i", y = expression(theta), title = "k=20")
+
+grid.arrange(grafico3_2,grafico3_3,grafico3_4, nrow=3, bottom ="Gráfico 2: Plot trace según concentración")
+```
+El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot resulta ser un ruido blanco sin ningún patrón particular. Sin embargo, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que el de concentración $k=10$ tiene un comportamiento más apropiado. Esto se debe a que se puede apreciar algunos estancamientos del valor de $\theta$ en los de concentraciones $k=4$ y $k=20$.
+
+Para evaluar la convergencia de las muestras a la distribución objetivo se presenta:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 #Histogramas
 plot_hist <- function(x, d_objetivo3) {
@@ -260,6 +287,7 @@ plot_hist <- function(x, d_objetivo3) {
     geom_histogram(aes(x = x, y =after_stat(density))) +
     geom_line(aes(x = x, y = y), data = df_line, color = "red")
 }
+
 grafico3_5 <- plot_hist(tabla3$muestra[1:5000],d_objetivo3) +
   labs (title = "k=4", x = "Muestras", y = "Densidad")
 grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo3) +
@@ -267,44 +295,47 @@ grafico3_6 <- plot_hist(tabla3$muestra[5001:10000],d_objetivo3) +
 grafico3_7 <- plot_hist(tabla3$muestra[10001:15000],d_objetivo3) +
   labs (title = "k=20", x = "Muestras", y = "Densidad")
 
-grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 2: ")
+grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 3: Histogramas de las muestras obtenidas y distribución de kumaraswamy según concentración")
 
+```
+En el gráfico 3 se observa que las muestras generadas para los 3 valores de concentración se ajustan a la distribución objetivo. Las 3 muestras exploran el rango completo de la distribución a posteriori. Sin embargo, pareciera que las concentraciones $k=10$ y $k=20$ ajustan mejor (a excepción de una barra muy alta en $k=10$)
+
+Se calcula la correlación de la serie para cada valor de lag k consigo misma originando la función de autocorrelación:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 #Graficos de autocorrelacion
-invisible(a3 <- acf(tabla3$muestra[1:5000], main = "k=4"));
+plot_acf <- function(data, title) {
+  acf_result <- acf(data, plot = FALSE)
+  ggplot() +
+    geom_line(aes(y = acf_result$acf, x = acf_result$lag)) +
+    labs(title = title, x = "Rezago", y = "Autocorrelación")
+}
 
-grafico3_8 <- ggplot()+
-  geom_line(aes(y = a3$acf, x = a3$lag)) +
-  labs (title = "k=4", x = "Rezago", y = "Autocorrelación")
 
-invisible(b3 <- acf(tabla3$muestra[5001:10000], main = "k=10"));
+grafico3_8 <- plot_acf(tabla3$muestra[1:5000], "k=4")
+grafico3_9 <- plot_acf(tabla3$muestra[5001:10000], "k=10")
+grafico3_10 <- plot_acf(tabla3$muestra[10001:15000], "k=20")
 
-grafico3_9 <- ggplot()+
-  geom_line(aes(y = b3$acf, x = b3$lag)) +
-  labs (title = "k=10", x = "Rezago", y = "Autocorrelación")
+grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 4: Autocorrelación según concentración") 
 
-invisible(c3 <- acf(tabla3$muestra[10001:15000], main = "k=20"));
-
-grafico3_10 <- ggplot()+
-  geom_line(aes(y = c3$acf, x = c3$lag)) +
-  labs (title = "k=20", x = "Rezago", y = "Autocorrelación")
-
-grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 3: ") 
 ```
+Las muestras tienen que ser independientes. La dependencia de valores anteriores tiene que desaparecer rápido. En el gráfico 4 se observa que esto ocurre para los 3 valores de concentración. Sin embargo, a diferencia de los resultados obtenidos anteriormente, este gráfico sugiere que el valor más adecuado para la concentración es $k=4$, teniendo una correlación de 0.25 en el rezago 5. Cabe destacar que la diferecia con las otras concentraciones no es grande, siendo éstas de 0.25 en los rezagos 6 y 8 aproximadamente. 
 
+Para cada una de las cadenas anteriores, se presentan la media de la distribución y los percentiles de $X$:
 
-
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Punto 4
 muestra4_1 <- tabla3$muestra[1:5000]
 muestra4_2 <- tabla3$muestra[5001:10000]
 muestra4_3 <- tabla3$muestra[10001:15000]
 
 #Calculo de la media y los percentiles 5 y 95 para X:
-medias <- c(mean(muestra4_1), mean(muestra4_2), mean(muestra4_3))
-percentiles <- data.frame(
+variable_x <- data.frame(
   Muestra = c("1", "2", "3"),
-  Percentile_5 = c(quantile(muestra4_1, prob = c(0.05)),
+  Concentración = c("k=4", "k=10", "k=20"),
+  Medias =  c(mean(muestra4_1), mean(muestra4_2), mean(muestra4_3)),
+  Percentil_5 = c(quantile(muestra4_1, prob = c(0.05)),
                   quantile(muestra4_2, prob = c(0.05)),
                   quantile(muestra4_3, prob = c(0.05))
                   ),
@@ -312,18 +343,33 @@ percentiles <- data.frame(
                   quantile(muestra4_2, prob = c(0.95)),
                   quantile(muestra4_3, prob = c(0.95))
                   )
-)
+) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Tabla 2: Media y percentiles de X")
 
+print(variable_x)
+
+
+```
+
+Para los 3 valores de concentración, se obtienen resultados muy similares para la media (0.79) y para los percentiles 5 y 95 de la distribución, siendo éstos 0.55 y 0.96 respectivamente. 
+
+Para cada una de las concentraciones, se presentan la media y los percentiles de la distribución de $logit(X)$:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Cálculo de la media y los percentiles 5 y 95 para logit(X):
 l_m1 <- log((muestra4_1/(1-muestra4_1)))
 l_m2 <- log((muestra4_2/(1-muestra4_2)))
 l_m3 <- log((muestra4_3/(1-muestra4_3)))
 
 
-medias_l <- c(mean(l_m1), mean(l_m2), mean(l_m3))
-percentiles_l <- data.frame(
+
+variable_logit_X <- data.frame(
   Muestra = c("1", "2", "3"),
-  Percentile_5 = c(quantile(l_m1, prob = c(0.05)),
+  Concentración = c("k=4", "k=10", "k=20"),
+  Medias = c(mean(l_m1), mean(l_m2), mean(l_m3)),
+  Percentil_5 = c(quantile(l_m1, prob = c(0.05)),
                   quantile(l_m2, prob = c(0.05)),
                   quantile(l_m3, prob = c(0.05))
                   ),
@@ -331,11 +377,23 @@ percentiles_l <- data.frame(
                   quantile(l_m2, prob = c(0.95)),
                   quantile(l_m3, prob = c(0.95))
                   )
-)
+) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Tabla 3: Media y percentiles de logit(X)")
 
+
+print(variable_logit_X)
 
 
 ```
+
+Al hacer uso de todo el eje real mediante el $logit(x)$, se observa que la media para $k=20$ difiere un poco de las medias correspondientes a las otras 2 concentraciones. A su vez, los percentiles 5 y 95 que difieren más son los de concentración $k=4$. Cabe destacar que no se consideran relevantes estas diferencias. 
+
+### Conclusión
+
+Al analizar las distintas muestras de distribución Kumaraswamy de parámetros $a=6$ y $b=2$ con propuesta beta de distintas concentraciones, no se encontraron grandes diferencias entre éstas. No es posible decidir con certeza cuál de los valores de concentración es mejor, debido a que las diferencias obtenidas han sido muy pequeñas. Sin embargo, si habría que sugerir un valor de concentración, se sugiere el 10. Esto es debido a que tiene una tasa de aceptación moderada (0.65), el algoritmo no se estanca demasiado en los mismos valores de $\theta$, la muestra explora el rango completo de la distribución a posteriori y se ajusta bien a la curva. Además, la autocorrelación decrece rápidamente y es menor a 0.25 a partir del rezago 6. 
+
 
 ```{r}
 #Paso 7
