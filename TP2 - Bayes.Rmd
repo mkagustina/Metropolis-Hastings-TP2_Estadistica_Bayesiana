@@ -13,7 +13,7 @@ title: |
   \end{tabular}
   \vspace{5cm}
 author: |
-  *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
+  *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocío Canteros
 date: "Año 2024"
 output: pdf_document
 ---
@@ -29,7 +29,6 @@ library(gridExtra)
 library(kableExtra)
 library(stats)
 library(mvtnorm)
-library(emoji)
 set.seed(394)
 ```
 
@@ -629,6 +628,7 @@ Debido a su forma peculiar, la función de Rosenbrock presenta desafíos particu
     \includegraphics[width=7cm]{im1.png}
 \end{center}
 
+
 Esta forma de banana popularizada por Rosenbrock es también muy conocida en el campo de la estadística bayesiana, ya que en ciertos escenarios, la densidad del posterior toma una forma que definitivamente se asemeja a la banana de Rosenbrock. Un ejemplo de este fenómeno es la función $p^*$:
 
 $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
@@ -636,6 +636,7 @@ $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
 \begin{center}
     \includegraphics[width=7cm]{im2.png}
 \end{center}
+
 
 ```{r}
 #Punto 9
