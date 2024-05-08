@@ -443,7 +443,7 @@ $$\mathbf{\Sigma^5} = \begin{bmatrix}
 0 & 6 
 \end{bmatrix}$$
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4}
 #Paso 7
 
 # Funciones a utilizar
@@ -454,14 +454,15 @@ plot_trace <- function(x, y) {
   df <- data.frame(
     x = rep(1:n, 2),
     y = c(x,y),
-    dimension = rep(1:2, each = n),
-    parametro = factor(rep(1:2, each = n), labels = c("mu[1]", "mu[2]")) 
+    parametro = factor(rep(1:2, each = n), labels = c(expression(mu[1]), expression(mu[2]))) 
   )
   
-  ggplot(df) + 
-    geom_line(aes(x = x, y = y)) +
-    facet_grid(rows = vars(dimension)) +
-    labs(x = "i", y = "Valor", color = parse(text ="Parámetro"))
+  ggplot(df) +
+    geom_line(aes(x = x, y = y, color = parametro)) +
+    facet_wrap(~parametro, labeller = label_parsed,
+               nrow = 2, strip.position = "right") +
+    labs(x = "iteración", y = "Valor") +
+    theme_bw()
 }
 
 
