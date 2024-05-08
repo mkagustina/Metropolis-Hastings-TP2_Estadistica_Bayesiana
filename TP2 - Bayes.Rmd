@@ -1,21 +1,13 @@
 ---
-title: |
-  \vspace{1cm}
-  \begin{tabular}{c}
-  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
-  {\Large Facultad de Ciencias Económicas y Estadística}\\
-  \\
-  \includegraphics[width=5cm]{LogoUNR.png}\\
-  \vspace{1cm}
-  \\
-  {\huge\textbf{"Metropolis-Hastings"}}\\
-  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
-  \end{tabular}
-  \vspace{5cm}
-author: |
+title: "\\vspace{1cm}\n\\begin{tabular}{c}\n{\\normalsize\\textbf{UNIVERSIDAD NACIONAL
+  DE ROSARIO}}\\\\\n{\\Large Facultad de Ciencias Económicas y Estadística}\\\\\n\\\\\n\\includegraphics[width=5cm]{LogoUNR.png}\\\\\n\\vspace{1cm}\n\\\\\n{\\huge\\textbf{\"Metropolis-Hastings\"}}\\\\\n{\\Large
+  Estadística Bayesiana - Trabajo Práctico Nº2}\\\\\n\\end{tabular}\n\\vspace{5cm}\n"
+author: "|"
   *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocio Canteros
 date: "Año 2024"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 # Introducción
@@ -29,6 +21,7 @@ library(gridExtra)
 library(kableExtra)
 library(stats)
 library(mvtnorm)
+library(emoji)
 set.seed(394)
 ```
 
@@ -613,7 +606,7 @@ Utilizando el algoritmo de Metrópolis-Hastings en 2D para generar muestras de u
 
 ## Función de Rosenbrock
 
-La función de Rosenbrock, a veces llamada el “valle de Rosenbrock”, y comunmente conocida como la “banana de Rosenbrock” 🍌, es una función matemática utilizada frecuentemente como un problema de optimización y prueba para algoritmos de optimización numérica.
+La función de Rosenbrock, a veces llamada el “valle de Rosenbrock”, y comunmente conocida como la “banana de Rosenbrock” \emoji{banana}, es una función matemática utilizada frecuentemente como un problema de optimización y prueba para algoritmos de optimización numérica.
 
 La función está definida por:
 
@@ -623,13 +616,15 @@ y cuenta con un mínimo global en $(x,y)=(a,a^2)$, que satisface $f(a,a^2)=0$.
 
 Debido a su forma peculiar, la función de Rosenbrock presenta desafíos particulares para los algoritmos de optimización, ya que tiene un valle largo y estrecho en el que la convergencia puede ser lenta.
 
-![](im1.png)
+![ ](im1.png)
 
 Esta forma de banana popularizada por Rosenbrock es también muy conocida en el campo de la estadística bayesiana, ya que en ciertos escenarios, la densidad del posterior toma una forma que definitivamente se asemeja a la banana de Rosenbrock. Un ejemplo de este fenómeno es la función $p^*$:
 
 $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
 
-![](im2.png)
+![ ](im2.png)
+
+
 ```{r}
 #Punto 9
 
