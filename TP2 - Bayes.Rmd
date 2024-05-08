@@ -306,7 +306,7 @@ Se calcula la correlación de la serie para cada valor de lag k consigo misma or
 plot_acf <- function(data, title) {
   acf_result <- acf(data, plot = FALSE)
   ggplot() +
-    geom_line(aes(y = acf_result$acf, x = acf_result$lag), color = "olivedrab3") +
+    geom_line(aes(y = acf_result$acf, x = acf_result$lag), color = "olivedrab3", size = 0.8) +
     labs(title = title, x = "Rezago", y = "Autocorrelación") +
     theme_bw()
 }
@@ -675,40 +675,46 @@ matriz3 <- funcion9_1(matrix(c(4, 1, 1, 4), nrow = 2))
 
 grafico9_1_1 <- ggplot()+
   geom_line(aes(y = matriz1$autocorr_p1$acf, x = matriz1$autocorr_p1$lag),
-            color = "olivedrab3") +
+            color = "olivedrab3", size = 0.8) +
   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matiz 1 ", x = "Rezago", y = "Autocorrelación")
 
 grafico9_1_2 <- ggplot()+
   geom_line(aes(y = matriz1$autocorr_p2$acf, x = matriz1$autocorr_p2$lag),
-            color="slateblue") +
+            color="slateblue", size = 0.8) +
   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 1' ", x = "Rezago", y = "Autocorrelación")
 
 
 grafico9_2_1 <- ggplot()+
   geom_line(aes(y = matriz2$autocorr_p1$acf, x = matriz2$autocorr_p1$lag),
-            color = "olivedrab3") +
+            color = "olivedrab3", size = 0.8) +
   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 2 ", x = "Rezago", y = "Autocorrelación")
 
 grafico9_2_2 <- ggplot()+
   geom_line(aes(y = matriz2$autocorr_p2$acf, x = matriz2$autocorr_p2$lag),
-            color = "slateblue") +
+            color = "slateblue", size = 0.8) +
   theme_bw()  +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 2", x = "Rezago", y = "Autocorrelación")
 
 grafico9_3_1 <- ggplot()+
   geom_line(aes(y = matriz3$autocorr_p1$acf, x = matriz3$autocorr_p1$lag),
-            color = "olivedrab3") +
+            color = "olivedrab3", size = 0.8) +
   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 3", x = "Rezago", y = "Autocorrelación")
 
 
 grafico9_3_2 <- ggplot()+
   geom_line(aes(y = matriz3$autocorr_p2$acf, x = matriz3$autocorr_p2$lag),
-            color = "slateblue") +
+            color = "slateblue", size = 0.8) +
   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 3", x = "Rezago", y = "Autocorrelación")
 ```
 
