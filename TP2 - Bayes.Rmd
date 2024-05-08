@@ -1,23 +1,15 @@
 ---
-title: |
-  \vspace{1cm}
-  \begin{tabular}{c}
-  {\normalsize\textbf{UNIVERSIDAD NACIONAL DE ROSARIO}}\\
-  {\Large Facultad de Ciencias Económicas y Estadística}\\
-  \\
-  \includegraphics[width=5cm]{LogoUNR.png}\\
-  \vspace{1cm}
-  \\
-  {\huge\textbf{"Metropolis-Hastings"}}\\
-  {\Large Estadística Bayesiana - Trabajo Práctico Nº2}\\
-  \end{tabular}
-  \vspace{5cm}
-author: |
+title: "\\vspace{1cm}\n\\begin{tabular}{c}\n{\\normalsize\\textbf{UNIVERSIDAD NACIONAL
+  DE ROSARIO}}\\\\\n{\\Large Facultad de Ciencias Económicas y Estadística}\\\\\n\\\\\n\\includegraphics[width=5cm]{LogoUNR.png}\\\\\n\\vspace{1cm}\n\\\\\n{\\huge\\textbf{\"Metropolis-Hastings\"}}\\\\\n{\\Large
+  Estadística Bayesiana - Trabajo Práctico Nº2}\\\\\n\\end{tabular}\n\\vspace{5cm}\n"
+author: "|"
   *Alumnas:* Agustina Mac Kay, Ailén Salas y Rocío Canteros
 date: "Año 2024"
-output: pdf_document
-editor_options: 
-  markdown: 
+output:
+  html_document:
+    df_print: paged
+editor_options:
+  markdown:
     wrap: sentence
 ---
 
