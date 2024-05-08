@@ -686,10 +686,12 @@ $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
 \begin{center}
     \includegraphics[width=7cm]{im2.png}
 \end{center}
-<<<<<<< HEAD
+```
 
 A continuación se obtienen muestras de la distribución a posteriori determinada por $p^*$ con $a=0.5$ y $b=5$ utilizando la función del algoritmo de Metrópolis-Hastings. Para la distribución de propuesta se utilizan las siguientes matrices de covarianza:
 
+```{=tex}
+\begin{center}
 $$\mathbf{\Sigma^1} = \begin{bmatrix}
 0.3 & 0.1\\
 0.1 & 0.2 
@@ -705,9 +707,6 @@ $$\mathbf{\Sigma^3} = \begin{bmatrix}
 1 & 4 
 \end{bmatrix}$$
 
-
-
-=======
 ```
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
@@ -825,13 +824,15 @@ grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3,
 ```
 En los gráficos 12 y 13 se puede ver que la dependencia de valores anteriores desciende más rápido al utilizar la matriz $\Sigma^1$. 
 
-A partir de estos resultados, se elige utilizar el conjunto de muestras correspondiente a la matriz $\Sigma^1$ con el objetivo de obtener las siguientes probabilidades: 
+A partir de estos resultados, se elige utilizar el conjunto de muestras correspondiente a la matriz $\Sigma^1$ con el objetivo de obtener las estimaciones de las probabilidades: 
 
 i\. $Pr(0<X_1<1,0<X_2<1)$
 
 ii\. $Pr(-1<X_1<0,0<X_2<1)$
 
 iii\. $Pr(1<X_1<2,2<X_2<3)$
+
+Para luego compararlas con las probabilidades estimadas obtenidas a través de la integración de Monte Carlo.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Punto 10
@@ -871,7 +872,6 @@ p3 <- 0
 
 ```
 
-Se vuelven a calcular las probabilidades anteriores, esta vez utilizando la integración de Monte Carlo:
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # Punto 11
@@ -921,6 +921,17 @@ data.frame (
   kable(align = "c", col.names = c("Probabilidad", "Muestra", "Monte-Carlo")) %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed"),
                 latex_options = c("hold_position")) %>%
-  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por la muestra y el método de Monte-Carlo" = 1))
+  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por la muestra y el método de Monte-Carlo" = 2))
 
 ```
+
+En la tabla 7 se puede ver que las probabilidades estimadas son similares para ambos métodos. 
+
+### Conclusión 
+
+Al emplear el algoritmo de Metrópolis-Hastings para generar muestras de la función de Rosenbrock, la matriz de covarianza $\Sigma^1$ produjo los mejores resultados en comparación con las otras 2 opciones. Esto se basó en los criterios del análisis del trace plot, que mostró que el algoritmo no se estanca en valores de $\theta$, y una tasa de aceptación favorable en comparación con $\Sigma^2$ y $\Sigma^3$. Además, la autocorrelación de la serie disminuyó rápidamente.
+
+La comparación entre las probabilidades estimadas de las muestras obtenidas a través del algoritmo de MH y las obtenidas mediante integración de Monte Carlo demostró que la muestra inicial fue bastante buena en términos de precisión y calidad.
+
+
+
