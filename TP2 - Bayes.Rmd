@@ -416,9 +416,34 @@ $$\mathbf{\Sigma^*} = \begin{bmatrix}
 0.4 & 2.4
 \end{bmatrix}$$
 
-La matriz de covariancia 
+Con el objetivo de analizar cual es la matriz de covarianza para la distribución propuesta más óptima, se prueba con las siguientes:
 
-```{r}
+$$\mathbf{\Sigma^1} = \begin{bmatrix}
+2 & 0.5\\
+0.5 & 31.35 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^2} = \begin{bmatrix}
+2 & 0\\
+0 & 3 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^3} = \begin{bmatrix}
+0.4 & 0\\
+0 & 0.4 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^4} = \begin{bmatrix}
+1 & 0\\
+0 & 1 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^5} = \begin{bmatrix}
+5 & 0\\
+0 & 6 
+\end{bmatrix}$$
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Paso 7
 
 # Funciones a utilizar
@@ -439,46 +464,9 @@ plot_trace <- function(x, y) {
     labs(x = "i", y = "Valor", color = parse(text ="Parámetro"))
 }
 
-# Función para calcular el nombre del parámetro
-nombre_parametro <- function(num) {
-  if (num == 1) {
-    return(expression(mu[1]))
-  } else {
-    return(expression(mu[2]))
-  }
-}
-
-#2. Cálculo de R sombrero
-
-W <- function(muestras) {
-  
-  mean(apply(muestras, 2, var))
- 
-}
 
 
-B <-  function(muestras, M, S) {
-  media_g <- mean(muestras)
-  media_cadena <- mean(apply(muestras, 2, mean))
-  
-  
-  b <- (S/(M-1))* sum((media_cadena-media_g)^2)
-  #S = cantidad observaciones
-  #M = cantidad muestras
-  return(b)
-}
-
-
-r_hat <- function(x) {
-  S <- nrow(x)
-  M <- ncol(x)
-  W <- W(x)
-  B <- B(x, M, S)
-  
-  sqrt(((S/(S-1))*W + (1/S)*B)/W)
-}
-
-#3. Número efectivo de muestras
+#2. Número efectivo de muestras
 n_eff <- function(muestras){
   S <- length(muestras)
   autocorr <- acf(muestras, plot = F, lag = Inf)$acf
@@ -500,10 +488,9 @@ funcion7_1 <- function(matriz_cov) {
 funcion7 <- sample_mh(d_objetivo7,r_propuesta7,d_propuesta7,c(0,0),n7)
 muestra7 <- funcion7$muestras
 grafico7_1 <- plot_trace(muestra7[,1],muestra7[,2])
-r_sombrero <- r_hat(muestra7)
 n_eff7_1 <- n_eff(muestra7[,1])
 n_eff7_2 <- n_eff(muestra7[,2])
- return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2, r = r_sombrero,
+ return(list(grafico = grafico7_1, n1 = n_eff7_1, n2 = n_eff7_2,
              muestra7 = muestra7))
 
 }
@@ -515,21 +502,31 @@ matriz3 <- funcion7_1(matrix(c(0.4, 0, 0, 0.4), nrow = 2))
 matriz4 <- funcion7_1(matrix(c(1, 0, 0, 1), nrow = 2))
 matriz5 <- funcion7_1(matrix(c(5, 0, 0, 6), nrow = 2))
 
-matriz1$grafico
-matriz2$grafico
-matriz3$grafico
-matriz4$grafico
-matriz5$grafico
+matriz1$grafico + labs(caption = "Gráfico 5: Trace plot de la matriz 1") +
+    theme(legend.position = "none")
+matriz2$grafico + labs(caption = "Gráfico 6: Trace plot de la matriz 2") +
+    theme(legend.position = "none")
+matriz3$grafico + labs(caption = "Gráfico 7: Trace plot de la matriz 3") +
+    theme(legend.position = "none")
+matriz4$grafico + labs(caption = "Gráfico 8: Trace plot de la matriz 4") +
+    theme(legend.position = "none")
+matriz5$grafico + labs(caption = "Gráfico 9: Trace plot de la matriz 5") +
+    theme(legend.position = "none")
+
+```
+
+```{r}
 
 tabla <- data.frame(
   Matriz = c("1", "2", "3", "4", "5"),
   Num_efectivo_p1 = trunc(c(matriz1$n1, matriz2$n1, matriz3$n1, matriz4$n1, matriz5$n1)),
-  Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2)),
-  R_sombrero = c(matriz1$r, matriz2$r, matriz3$r, matriz4$r, matriz5$r)
-)
+  Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2))
+  )
+
 print(tabla)
 #Nos quedariamos con la ultima matriz.
 ```
+
 
 
 ```{r}
