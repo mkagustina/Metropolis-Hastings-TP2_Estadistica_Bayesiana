@@ -21,7 +21,6 @@ library(gridExtra)
 library(kableExtra)
 library(stats)
 library(mvtnorm)
-library(emoji)
 set.seed(394)
 ```
 
@@ -606,7 +605,7 @@ Utilizando el algoritmo de Metrópolis-Hastings en 2D para generar muestras de u
 
 ## Función de Rosenbrock
 
-La función de Rosenbrock, a veces llamada el “valle de Rosenbrock”, y comunmente conocida como la “banana de Rosenbrock” \emoji{banana}, es una función matemática utilizada frecuentemente como un problema de optimización y prueba para algoritmos de optimización numérica.
+La función de Rosenbrock, a veces llamada el “valle de Rosenbrock”, y comunmente conocida como la “banana de Rosenbrock”, es una función matemática utilizada frecuentemente como un problema de optimización y prueba para algoritmos de optimización numérica.
 
 La función está definida por:
 
