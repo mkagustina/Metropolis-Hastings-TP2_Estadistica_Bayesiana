@@ -514,20 +514,24 @@ matriz5$grafico + labs(caption = "Gráfico 9: Trace plot de la matriz 5") +
     theme(legend.position = "none")
 
 ```
+En los gráficos 5 a 9 se observa que, para los dos parámetros, las iteraciones oscilan alrededor del cero. Puesto que la cantidad de observaciones es elevada, no se aprecian con claridad los estancamientos del valor de $\theta$. Pareciera que con la matriz 3 es con la cual más se estanca. 
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 tabla <- data.frame(
   Matriz = c("1", "2", "3", "4", "5"),
   Num_efectivo_p1 = trunc(c(matriz1$n1, matriz2$n1, matriz3$n1, matriz4$n1, matriz5$n1)),
   Num_efectivo_p2 = trunc(c(matriz1$n2, matriz2$n2, matriz3$n2, matriz4$n2, matriz5$n2))
-  )
+  ) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Tabla 4: Números efectivos de muestras para cada matriz y cada parámetro")
 
 print(tabla)
 #Nos quedariamos con la ultima matriz.
 ```
 
-
+En la tabla 4 se observa que la matriz de covarianza de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5. Teniendo en cuenta que la cantidad de muestras es 5000, este resulta ser un valor bajo. De todas maneras, al ser el más alto, se elige esta matriz. 
 
 ```{r}
 #Punto 8: se calculan las probabilidades con la última matriz de var y cov.
