@@ -15,9 +15,7 @@ title: |
 author: |
   Alumnas: Agustina Mac Kay, Ailén Salas y Rocío Canteros
 date: "Año 2024"
-output: 
-  pdf_document:
-    latex_engine: pdflatex
+output: pdf_document
 editor_options: 
   markdown: 
     wrap: sentence
@@ -283,13 +281,8 @@ grafico3_4 <- plot_trace(tabla3$muestra[4001:6000]) +
 grid.arrange(grafico3_2,grafico3_3,grafico3_4, nrow=3, bottom ="Gráfico 2: Plot trace según concentración")
 ```
 
-<<<<<<< HEAD
+
 El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. Además, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que las 3 concentraciones presentan algunos estancamientos. El de concentración $k=4$ presenta más estancamientos que el resto.
-=======
-El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot resulta ser un ruido blanco sin ningún patrón particular.
-Sin embargo, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que el de concentración $k=10$ tiene un comportamiento más apropiado.
-Esto se debe a que se puede apreciar algunos estancamientos del valor de $\theta$ en los de concentraciones $k=4$ y $k=20$.
->>>>>>> 84754681162c855b3c1135d4146bd261f60f3596
 
 Para evaluar la convergencia de las muestras a la distribución objetivo se presenta:
 
@@ -325,9 +318,9 @@ grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 3: Mues
 
 \newpage
 
-En el gráfico 3 se observa que las muestras generadas para los 3 valores de concentración se ajustan a la distribución objetivo.
+En el gráfico 3 se observa que las muestras generadas para los 3 valores de concentración se ajustan bastante bien a la distribución objetivo.
 Las 3 muestras exploran el rango completo de la distribución a posteriori.
-Sin embargo, pareciera que las concentraciones $k=10$ y $k=20$ ajustan mejor (a excepción de una barra muy alta en $k=10$)
+Sin embargo, pareciera que las concentraciones $k=4$ y $k=20$ ajustan mejor.
 
 Se calcula la correlación de la serie para cada valor de lag k consigo misma originando la función de autocorrelación:
 
@@ -354,11 +347,7 @@ grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 4: Au
 
 ```
 
-Las muestras tienen que ser independientes.
-La dependencia de valores anteriores tiene que desaparecer rápido.
-En el gráfico 4 se observa que esto ocurre para los 3 valores de concentración.
-Sin embargo, a diferencia de los resultados obtenidos anteriormente, este gráfico sugiere que el valor más adecuado para la concentración es $k=4$, teniendo una correlación de 0.25 en el rezago 5.
-Cabe destacar que la diferecia con las otras concentraciones no es grande, siendo éstas de 0.25 en los rezagos 6 y 8 aproximadamente.
+Las muestras tienen que ser independientes. La dependencia de valores anteriores tiene que desaparecer rápido. En el gráfico 4 se observa que esto ocurre para los 3 valores de concentración. Este gráfico sugiere que el valor más adecuado para la concentración es $k=4$, teniendo una correlación de 0.25 en el rezago 5. Cabe destacar que la diferecia con las otras concentraciones no es grande, siendo éstas de 0.25 en los rezagos 6 y 9 aproximadamente.
 
 Para cada una de las cadenas anteriores, se presentan la media de la distribución y los percentiles de $X$:
 
@@ -388,7 +377,7 @@ data.frame(
   add_header_above(c(" " = 2, "Tabla 2: Media y percentiles de X" = 3))
 ```
 
-Para los 3 valores de concentración, se obtienen resultados muy similares para la media (0.79) y para los percentiles 5 y 95 de la distribución, siendo éstos 0.55 y 0.96 respectivamente.
+Para los 3 valores de concentración, se obtienen resultados muy similares para la media (0.79) y para los percentiles 5 y 95 de la distribución, siendo éstos aproximados por 0.55 y 0.95 respectivamente.
 
 Para cada una de las concentraciones, se presentan la media y los percentiles de la distribución de $logit(X)$:
 
@@ -417,17 +406,15 @@ data.frame(
   add_header_above(c(" " = 2, "Tabla 3: Media y percentiles de logit(X)" = 3))
 ```
 
-Al hacer uso de todo el eje real mediante el $logit(x)$, se observa que la media para $k=20$ difiere un poco de las medias correspondientes a las otras 2 concentraciones.
-A su vez, los percentiles 5 y 95 que difieren más son los de concentración $k=4$.
-Cabe destacar que no se consideran relevantes estas diferencias.
+Al hacer uso de todo el eje real mediante el $logit(x)$, se observa que la media y los percentiles para $k=20$ difieren un poco de estos valores para las otras 2 concentraciones.
 
 ### Conclusión
 
 Al analizar las distintas muestras de distribución Kumaraswamy de parámetros $a=6$ y $b=2$ con propuesta beta de distintas concentraciones, no se encontraron grandes diferencias entre éstas.
 No es posible decidir con certeza cuál de los valores de concentración es mejor, debido a que las diferencias obtenidas han sido muy pequeñas.
-Sin embargo, si habría que sugerir un valor de concentración, se sugiere el 10.
-Esto es debido a que tiene una tasa de aceptación moderada (0.65), el algoritmo no se estanca demasiado en los mismos valores de $\theta$, la muestra explora el rango completo de la distribución a posteriori y se ajusta bien a la curva.
-Además, la autocorrelación decrece rápidamente y es menor a 0.25 a partir del rezago 6.
+Sin embargo, si habría que sugerir un valor de concentración, se sugiere el 4.
+Esto es debido a que tiene una tasa de aceptación moderada (0.45), el algoritmo no se estanca demasiado en los mismos valores de $\theta$, la muestras explora el rango completo de la distribución a posteriori y se ajusta bien a la curva.
+Además, para este valor de concentración, la autocorrelación decrece rápidamente y es menor a 0.25 a partir del rezago 5. Esto último no ocurre para las otras dos concentraciones.
 
 \newpage
 
