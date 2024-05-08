@@ -533,7 +533,17 @@ print(tabla)
 
 En la tabla 4 se observa que la matriz de covarianza de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5. Teniendo en cuenta que la cantidad de muestras es 5000, este resulta ser un valor bajo. De todas maneras, al ser el más alto, se elige esta matriz. 
 
-```{r}
+A partir de las muestras obtenidas con la matriz 5, se estiman las siguientes probabilidades: 
+
+i\. $Pr(X_1>1,X_2>0)$
+
+ii\. $Pr(X_1>1,X_2>2)$
+
+iii\. $Pr(X_1>0.4,X_2>0.75)$
+
+Luego, mediante la función de la distribución de la normal bivariada se obtienen las probabilidades reales con el objetivo de compararlas y ver si se obtuvo una buena muestra con el método anterior.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Punto 8: se calculan las probabilidades con la última matriz de var y cov.
 muestra7 <- as.data.frame(matriz5$muestra7)
 colnames(muestra7) <- c("X", "Y")
@@ -544,7 +554,7 @@ prob1 <- muestra7 %>%
   filter(X > 1) %>% 
   count(Y < 0)
 
-prob1$n[2]/(n7)
+p1 <- prob1$n[2]/(n7)
 
 
 #Probabilidad n°2:
@@ -552,7 +562,7 @@ prob2 <- muestra7 %>%
   filter(X > 1) %>% 
   count(Y > 2)
 
-prob2$n[2]/(n7)
+p2 <- prob2$n[2]/(n7)
 
 
 
@@ -561,14 +571,14 @@ prob3 <- muestra7 %>%
   filter(X > 0.4) %>% 
   count(Y > 0.75)
 
-prob3$n[2]/(n7)
+p3 <- prob3$n[2]/(n7)
 
 
 
 #Probabilidades reales:
 
 #Probabilidad n°1:
-pmvnorm(lower = c(1, -Inf), upper = c(Inf, 0), 
+p4 <- pmvnorm(lower = c(1, -Inf), upper = c(Inf, 0), 
         mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
 
 #Cómo funcionan "lower" y "upper"? 
@@ -576,17 +586,30 @@ pmvnorm(lower = c(1, -Inf), upper = c(Inf, 0),
 
 
 #Probabilidad n°2:
-pmvnorm(lower = c(1, 2), upper = c(Inf, Inf), 
+p5 <- pmvnorm(lower = c(1, 2), upper = c(Inf, Inf), 
         mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
 
 
 
 #Probabilidad n°3:
-pmvnorm(lower = c(0.4, 0.75), upper = c(Inf, Inf), 
+p6 <- pmvnorm(lower = c(0.4, 0.75), upper = c(Inf, Inf), 
         mean = c(0.4, 0.75), sigma = matrix(c(1.35, 0.4, 0.4, 2.4), nrow = 2))
 
-
+data.frame (
+  Probabilidad = c("i","ii","iii"),
+  Estimada = c(p1,p2,p3),
+  Real = c(p4,p5,p6)
+) %>%
+  kable() %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
+  add_footnote("Tabla 5: Probabilidades estimadas y reales")
 ```
+Según lo observado en la tabla 5, se podría considerar que se tiene una buena muestra de una normal bivariada con media $\mu^*$ y matriz de covarianza $\Sigma^*$ a través del algoritmo de Metrópolis-Hastings en 2D, con la matriz de covarianza para la distribución propuesta $\Sigma^5$.
+
+## Conclusión 
+
+Utilizando el algoritmo de Metrópolis-Hastings en 2D para generar muestras de una distribución normal bivariada con la media y la matriz de varianza y covarianza especificadas, se observa que la elección de la matriz de varianza y covarianza de la distribución propuesta ($\mathbf{\Sigma^5}$) influye en la eficiencia del muestreo. Al comparar con las otras matrices de varianza y covarianza, $\mathbf{\Sigma^5}$ presenta un número efectivo de muestras más alto, lo que indica una exploración más eficiente del espacio de parámetros.
+
 
 
 ```{r}
