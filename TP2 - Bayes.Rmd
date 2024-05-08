@@ -151,17 +151,23 @@ for(i in 1:5) {
 }
 
 # Asigno etiquetas para cada función de kumaraswamy
-levels(data1$Funcion) <- c(
-  expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
-  expression(a ~ " = 0.1," ~ b ~ "= 0.7"),
-  expression(a ~ " = 3," ~ b ~ "= 3"),
-  expression(a ~ " = 4," ~ b ~ "= 9"),
-  expression(a ~ " = 10," ~ b ~ "= 5")
-)
+# levels(data1$Funcion) <- c(
+#   expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
+#   expression(a ~ " = 0.1," ~ b ~ "= 0.7"),
+#   expression(a ~ " = 3," ~ b ~ "= 3"),
+#   expression(a ~ " = 4," ~ b ~ "= 9"),
+#   expression(a ~ " = 10," ~ b ~ "= 5")
+# )
+
+levels(data1$Funcion) <- c("a = 0.2, b = 0.2",
+                           "a = 0.1, b = 0.7",
+                           "a = 3, b = 3",
+                           "a = 4, b = 9",
+                           "a = 10, b = 5")
 
 ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
   geom_line(size = 0.55) +
-  facet_wrap(~Funcion, labeller = label_parsed) +
+  facet_wrap(~Funcion) +
   theme_bw() +
   labs(x = "x",
        caption = "Gráfico 1: distribución Kumaraswamy con distintas combinaciones de los parámetros a y b") + 
@@ -671,10 +677,9 @@ prob3 <- muestra9 %>%
   count(Y < 3 & Y > 2)
 
 prob3$n[2]/(n9)
+```
 
-
-
-{r}
+```{r, eval=FALSE}
 #Punto 11
 #Aproximación por el método de la grilla:
 
