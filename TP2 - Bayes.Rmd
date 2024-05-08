@@ -724,25 +724,22 @@ matriz3$grafico + labs(caption = "Gráfico 10: Plot trace de las matrices") +
   theme(legend.position = "none") + ggtitle("Matriz 3")
 ```
 
-```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.height=2.8}
+```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5}
 data.frame(
   Matriz = c("1", "2", "3"),
   Tasa = c(matriz1$tasa9, matriz2$tasa9, matriz3$tasa9)
 ) %>%
-  kable(align = "c") %>%
-  kable_styling(bootstrap_options = c("striped","hover","condensed"),
-                latex_options = c("hold_position")) %>%
+  kable(align = "c", booktabs = TRUE) %>%
+  kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
   add_footnote("Tabla 5: Probabilidades estimadas y reales")
+```
 
-
-
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=2.8}
 grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1, ncol = 3, 
              bottom = "Gráfico 11: Autocorrelación de las muestras del parámetro a")
 grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3, 
              bottom = "Gráfico 12: Autocorrelación de las muestras del parámetro b")
 ```
-
-
 
 
 ```{r}
