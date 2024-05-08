@@ -262,7 +262,7 @@ grafico3_4 <- plot_trace(tabla3$muestra[4001:6000]) +
 grid.arrange(grafico3_2,grafico3_3,grafico3_4, nrow=3, bottom ="Gráfico 2: Plot trace según concentración")
 ```
 
-El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot resulta ser un ruido blanco sin ningún patrón particular. Sin embargo, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que el de concentración $k=10$ tiene un comportamiento más apropiado. Esto se debe a que se puede apreciar algunos estancamientos del valor de $\theta$ en los de concentraciones $k=4$ y $k=20$.
+El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. Además, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que las 3 concentraciones presentan algunos estancamientos. El de concentración $k=4$ presenta más estancamientos que el resto.
 
 Para evaluar la convergencia de las muestras a la distribución objetivo se presenta:
 
@@ -633,6 +633,24 @@ $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
     \includegraphics[width=7cm]{im2.png}
 \end{center}
 
+A continuación se obtienen muestras de la distribución a posteriori determinada por $p^*$ con $a=0.5$ y $b=5$ utilizando la función del algoritmo de Metrópolis-Hastings. Para la distribución de propuesta se utilizan las siguientes matrices de covarianza:
+
+$$\mathbf{\Sigma^1} = \begin{bmatrix}
+0.3 & 0.1\\
+0.1 & 0.2 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^2} = \begin{bmatrix}
+2 & 0\\
+0 & 2 
+\end{bmatrix}$$
+
+$$\mathbf{\Sigma^3} = \begin{bmatrix}
+4 & 1\\
+1 & 4 
+\end{bmatrix}$$
+
+
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE}
 #Punto 9
@@ -685,7 +703,7 @@ grafico9_1_2 <- ggplot()+
             color="slateblue", size = 0.8) +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5)) +
-  labs (title = "Matriz 1' ", x = "Rezago", y = "Autocorrelación")
+  labs (title = "Matriz 1", x = "Rezago", y = "Autocorrelación")
 
 
 grafico9_2_1 <- ggplot()+
@@ -717,12 +735,15 @@ grafico9_3_2 <- ggplot()+
   theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 3", x = "Rezago", y = "Autocorrelación")
 ```
+Se comparan las trayectorias seguidas por las cadenas en el proceso de muestreo para las matrices de covarianza $\Sigma^1$ y $\Sigma^3$:
 
 ```{r,echo = FALSE, fig.height=2.8}
-matriz1$grafico + theme(legend.position = "none") + ggtitle("Matriz 1")
-matriz3$grafico + labs(caption = "Gráfico 10: Plot trace de las matrices") + 
+matriz1$grafico + theme(legend.position = "none") + ggtitle("Matriz 1") + labs(caption = "Gráfico 10: Plot trace de la matriz 1")
+matriz3$grafico + labs(caption = "Gráfico 11: Plot trace de la matriz 3") + 
   theme(legend.position = "none") + ggtitle("Matriz 3")
 ```
+En los gráficos 10 y 11 se observa que usando la matriz $\Sigma^3$ el algoritmo se estanca bastante más en el valor de $\theta$ que al utilizar la matriz $\Sigma^1$.
+
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5}
 data.frame(
@@ -731,15 +752,27 @@ data.frame(
 ) %>%
   kable(align = "c", booktabs = TRUE) %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
-  add_footnote("Tabla 5: Probabilidades estimadas y reales")
+  add_footnote("Tabla 6: Tasa de aceptación")
 ```
+En la tabla 6 se aprecia de manera clara que el algoritmo tiene una tasa de aceptación muy baja para las matrices de covarianza $\Sigma^2$ y $\Sigma^3$. Para la matriz $\Sigma^1$ la probabilidad de aceptación resulta ser buena.
+
+Siguientemente, las funciones de autocorrelación para cada parámetro y cada matriz de covarianza de la distribución propuesta:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=2.8}
 grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1, ncol = 3, 
-             bottom = "Gráfico 11: Autocorrelación de las muestras del parámetro a")
+             bottom = "Gráfico 12: Autocorrelación de las muestras del parámetro a")
 grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3, 
-             bottom = "Gráfico 12: Autocorrelación de las muestras del parámetro b")
+             bottom = "Gráfico 13: Autocorrelación de las muestras del parámetro b")
 ```
+En los gráficos 12 y 13 se puede ver que la dependencia de valores anteriores desciende más rápido al utilizar la matriz $\Sigma^1$. 
+
+A partir de estos resultados, se elige utilizar el conjunto de muestras correspondiente a la matriz $\Sigma^1$ con el objetivo de obtener las siguientes probabilidades: 
+
+i\. $Pr(0<X_1<1,0<X_2<1)$
+
+ii\. $Pr(-1<X_1<0,0<X_2<1)$
+
+iii\. $Pr(1<X_1<2,2<X_2<3)$
 
 
 ```{r}
@@ -773,6 +806,8 @@ prob3 <- muestra9 %>%
   count(Y < 3 & Y > 2)
 
 prob3$n[2]/(n9)
+
+
 ```
 
 ```{r, eval=FALSE}
