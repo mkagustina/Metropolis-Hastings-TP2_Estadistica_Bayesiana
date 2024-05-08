@@ -110,7 +110,7 @@ A continuación, se grafica la función de densidad de la distribución de Kumar
 
 
 $$
-\begin{array}{cc}
+\begin{array}{ccc}
 Combinación & a & b \\
 \hline
 1 & 0.2 & 0.2 \\
@@ -189,7 +189,7 @@ Conocer las distintas formas que puede tomar la curva de la distribución de Kum
 Utilizando la función construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$. Como distribución propuesta se utiliza una beta con los siguientes grados de concentración: 
 
 $$
-\begin{array}{cc}
+\begin{array}{cccc}
 Concentración & 4 & 10 & 20 \\
 \end{array}
 $$
@@ -230,7 +230,7 @@ tabla3_2 <- data.frame(
   kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
   add_footnote("Tabla 1: Tasa de aceptación")
 
-print (tabla3_2)
+print(tabla3_2)
 ```
 
 En la tabla 1 se observa que, a mayor concentración de la distribución propuesta beta, mayor es la tasa de aceptación.
