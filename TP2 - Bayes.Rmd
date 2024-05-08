@@ -15,9 +15,7 @@ title: |
 author: |
   Alumnas: Agustina Mac Kay, Ailén Salas y Rocío Canteros
 date: "Año 2024"
-output: 
-  pdf_document:
-    latex_engine: pdflatex
+output: pdf_document
 editor_options: 
   markdown: 
     wrap: sentence
