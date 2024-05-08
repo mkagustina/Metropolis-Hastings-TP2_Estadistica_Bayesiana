@@ -144,21 +144,13 @@ data1 <- data.frame(
   Grilla = rep(x_grid, times = 5)
 ) 
 
-#Completamos el data frame con las densidades:
+# Completamos el data frame con las densidades:
 for(i in 1:5) {
     indices <- seq(from = 1 + (i - 1) * 200, to = 200 + (i - 1) * 200)
     data1$Densidad[indices] <- kumaraswamy(x_grid, a[i], b[i])
 }
 
-# Asigno etiquetas para cada función de kumaraswamy
-# levels(data1$Funcion) <- c(
-#   expression(a ~ " = 0.2," ~ b ~ "= 0.2"),
-#   expression(a ~ " = 0.1," ~ b ~ "= 0.7"),
-#   expression(a ~ " = 3," ~ b ~ "= 3"),
-#   expression(a ~ " = 4," ~ b ~ "= 9"),
-#   expression(a ~ " = 10," ~ b ~ "= 5")
-# )
-
+# Cambiamos las etiquetas de las variables para mejorar el gráfico
 levels(data1$Funcion) <- c("a = 0.2, b = 0.2",
                            "a = 0.1, b = 0.7",
                            "a = 3, b = 3",
