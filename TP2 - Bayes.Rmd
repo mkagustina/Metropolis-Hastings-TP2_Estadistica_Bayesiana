@@ -441,11 +441,11 @@ En esta sección se trabaja con ejemplos que permitirán advertir las limitacion
 La distribución normal multivariada es la generalización de la distribución normal univariada a múltiples dimensiones (o mejor dicho, el caso en una dimensión es un caso particular de la distribución en múltiples dimensiones).
 La función de densidad de la distribución normal en $k$ dimensiones es:
 
-$$p(x|\mu,\Sigma) = \frac{1}{(2\pi)^{k/2}\lvert \Sigma \rvert^{1/2}} exp(-\frac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu))$$ donde $\mu$ es el vector de medias y $\Sigma$ la matriz de covarianza.
+$$p(x|\boldsymbol{\mu},\boldsymbol{\Sigma}) = \frac{1}{(2\pi)^{k/2}|\boldsymbol{\Sigma}|^{1/2}} \exp\left(-\frac{1}{2}(x-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(x-\boldsymbol{\mu})\right)$$ donde $\boldsymbol{\mu}$ es el vector de medias y $\boldsymbol{\Sigma}$ la matriz de covarianza.
 
-Utilizando la función descrita al principio del informe se obtienen muestras de una distribución normal bivariada con media $\mu^*$ y matriz de covarianza $\Sigma^*$.
+Utilizando la función de Metropolis-Hastings descrita al principio del informe, se obtienen muestras de una distribución normal bivariada con media $\boldsymbol{\mu}^*$ y matriz de covarianza $\boldsymbol{\Sigma}^*$, donde:
 
-$$\mathbf{\mu^*} = \begin{bmatrix}
+$$\mathbf{\boldsymbol{\mu}^*} = \begin{bmatrix}
 0.4 \\
 0.75
 \end{bmatrix}$$
@@ -455,7 +455,7 @@ $$\mathbf{\Sigma^*} = \begin{bmatrix}
 0.4 & 2.4
 \end{bmatrix}$$
 
-Con el objetivo de analizar cual es la matriz de covarianza para la distribución propuesta más óptima, se prueba con las siguientes:
+Con el objetivo de analizar cuál es la matriz de covarianza para la distribución propuesta más óptima, se prueba con las siguientes:
 
 $$\mathbf{\Sigma^1} = \begin{bmatrix}
 2 & 0.5\\
@@ -557,8 +557,8 @@ matriz5$grafico + labs(caption = "Gráfico 9: Trace plot de la matriz 5") +
 ```
 
 En los gráficos 5 a 9 se observa que, para los dos parámetros, las iteraciones oscilan alrededor del cero.
-Puesto que la cantidad de observaciones es elevada, no se aprecian con claridad los estancamientos del valor de $\theta$.
-Pareciera que con la matriz 3 es con la cual más se estanca.
+Puesto que la cantidad de observaciones es elevada, no se aprecian con claridad posibles estancamientos de los valores de los parámetros muestreados. Sin embargo, se puede observar que en los gráficos 5 y 9 se tiene un rango de valores de los parámetros más amplio, principalmente de $\mu_2$. Esto se debe a que las matrices utilizadas en estos casos son las que asignan mayores variacias para $\boldsymbol{\mu}$.
+Pareciera que con la matriz 3 es con la cual más se estanca el método.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
