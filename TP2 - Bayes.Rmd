@@ -562,9 +562,10 @@ data.frame(
 #Nos quedamos con la ultima matriz.
 ```
 
-En la tabla 4 se observa que la matriz de covarianza de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5.
-Teniendo en cuenta que la cantidad de muestras es 5000, este resulta ser un valor bajo.
-De todas maneras, al ser el más alto, se elige esta matriz.
+En la tabla 4 se observa que la matriz de variancias y covarianzas de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5, y por eso se continúa el análisis con ella.
+
+Se concluye con la tabla que 5000 muestras correlacionadas con la mejor matriz $\boldsymbol{\Sigma}$, equivalen a 808 y 608 muestras independientes para $\mu_1$ y $\mu_2$, respectivamente. 
+Este número de muestras efectivas es muy bajo, lo cual representa un aspecto negativo del método de MH.
 
 A partir de las muestras obtenidas con la matriz 5, se estiman las siguientes probabilidades:
 
@@ -577,7 +578,7 @@ $Pr(X_1>1,X_2>2)$
 iii\.
 $Pr(X_1>0.4,X_2>0.75)$
 
-Luego, mediante la función de la distribución de la normal bivariada se obtienen las probabilidades reales con el objetivo de compararlas y ver si se obtuvo una buena muestra con el método anterior.
+Luego, mediante la función de la distribución normal bivariada se obtienen las probabilidades reales con el objetivo de compararlas y ver la calidad de la muestra obtenida.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Punto 8: se calculan las probabilidades con la última matriz de var y cov.
@@ -642,12 +643,11 @@ data.frame (
   add_header_above(c(" " = 1, "Tabla 5: Probabilidades estimadas y reales" = 2))
 ```
 
-Según lo observado en la tabla 5, se podría considerar que se tiene una buena muestra de una normal bivariada con media $\mu^*$ y matriz de covarianza $\Sigma^*$ a través del algoritmo de Metrópolis-Hastings en 2D, con la matriz de covarianza para la distribución propuesta $\Sigma^5$.
+Según lo observado en la tabla 5, se podría considerar que se tiene una buena muestra de una normal bivariada con media $\boldsymbol{\mu}^*$ y matriz de covarianza $\boldsymbol{\Sigma}$ a través del algoritmo de Metrópolis-Hastings en 2D, con la matriz de covarianza para la distribución propuesta $\boldsymbol{\Sigma}^5$.
 
 ### Conclusión
 
-Utilizando el algoritmo de Metrópolis-Hastings en 2D para generar muestras de una distribución normal bivariada con la media y la matriz de varianza y covarianza especificadas, se observa que la elección de la matriz de varianza y covarianza de la distribución propuesta ($\mathbf{\Sigma^5}$) influye en la eficiencia del muestreo.
-Al comparar con las otras matrices de varianza y covarianza, $\mathbf{\Sigma^5}$ presenta un número efectivo de muestras más alto, lo que indica una exploración más eficiente del espacio de parámetros.
+Utilizando el algoritmo de Metrópolis-Hastings en 2D para generar muestras de una distribución normal bivariada, se observa que la elección de la matriz de varianzas y covarianzas de la distribución propuesta ($\mathbf{\Sigma^5}$) influye en la eficiencia del muestreo. Una mala elección de dicha matriz puede conducir a una exploración ineficiente del espacio paramétrico, y por consecuencia, a la obtención de muestras poco informativas.
 
 ## Función de Rosenbrock
 
@@ -675,7 +675,7 @@ $$p^*(x_1,x_2|a,b)=exp{{(-[(a-x_1)^2+b(x_2-x_1^2)^2]})}$$
     \includegraphics[width=7cm]{im2.png}
 \end{center}
 
-A continuación se obtienen muestras de la distribución a posteriori determinada por $p^*$ con $a=0.5$ y $b=5$ utilizando la función del algoritmo de Metrópolis-Hastings. Para la distribución de propuesta se utilizan las siguientes matrices de covarianza:
+A continuación se obtienen muestras de la distribución a posteriori determinada por $p^*$ con $a=0.5$ y $b=5$ utilizando la función del algoritmo de Metrópolis-Hastings. Para la distribución de propuesta se utilizan las siguientes matrices de variancias y covarianzas:
 
 \begin{center}
 $$\mathbf{\Sigma^1} = \begin{bmatrix}
@@ -779,14 +779,14 @@ grafico9_3_2 <- ggplot()+
   theme(plot.title = element_text(hjust = 0.5)) +
   labs (title = "Matriz 3", x = "Rezago", y = "Autocorrelación")
 ```
-Se comparan las trayectorias seguidas por las cadenas en el proceso de muestreo para las matrices de covarianza $\Sigma^1$ y $\Sigma^3$:
+Se comparan las trayectorias seguidas por las cadenas en el proceso de muestreo para las matrices $\boldsymbol{\Sigma}^1$ y $\boldsymbol{\Sigma}^3$:
 
 ```{r,echo = FALSE, fig.height=2.8}
 matriz1$grafico + theme(legend.position = "none") + ggtitle("Matriz 1") + labs(caption = "Gráfico 10: Plot trace de la matriz 1")
 matriz3$grafico + labs(caption = "Gráfico 11: Plot trace de la matriz 3") + 
   theme(legend.position = "none") + ggtitle("Matriz 3")
 ```
-En los gráficos 10 y 11 se observa que usando la matriz $\Sigma^3$ el algoritmo se estanca bastante más en el valor de $\theta$ que al utilizar la matriz $\Sigma^1$.
+En los gráficos 10 y 11 se observa que usando la matriz $\boldsymbol{\Sigma}^3$ el algoritmo se estanca bastante más que al utilizar la matriz $\boldsymbol{\Sigma}^1$.
 
 
 ```{r, echo = FALSE, warning=FALSE, message=FALSE, fig.width=5}
@@ -798,27 +798,28 @@ data.frame(
   kable_styling(bootstrap_options = c("striped","hover","condensed")) %>%
   add_header_above(c(" " = 1, "Tabla 6: Tasa de aceptación según matriz de variancias y covariancias" = 1))
 ```
-En la tabla 6 se aprecia de manera clara que el algoritmo tiene una tasa de aceptación muy baja para las matrices de covarianza $\Sigma^2$ y $\Sigma^3$. Para la matriz $\Sigma^1$ la probabilidad de aceptación resulta ser buena.
+En la tabla 6 se aprecia de manera clara que el algoritmo tiene una tasa de aceptación muy baja para las matrices de covarianza $\boldsymbol{\Sigma}^2$ y $\boldsymbol{\Sigma}^3$. Para la matriz $\boldsymbol{\Sigma}^1$ la probabilidad de aceptación resulta ser mucho más alta.
 
-Siguientemente, las funciones de autocorrelación para cada parámetro y cada matriz de covarianza de la distribución propuesta:
+A continuación, las funciones de autocorrelación para cada parámetro y cada matriz $\boldsymbol{\Sigma}$ de la distribución propuesta:
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=2.8}
+```{r echo=FALSE, fig.height=2.8, message=FALSE, warning=FALSE}
 grid.arrange(grafico9_1_1, grafico9_2_1, grafico9_3_1, ncol = 3, 
              bottom = "Gráfico 12: Autocorrelación de las muestras del parámetro a")
 grid.arrange(grafico9_1_2, grafico9_2_2, grafico9_3_2, ncol = 3, 
              bottom = "Gráfico 13: Autocorrelación de las muestras del parámetro b")
 ```
-En los gráficos 12 y 13 se puede ver que la dependencia de valores anteriores desciende más rápido al utilizar la matriz $\Sigma^1$. 
+En los gráficos 12 y 13 se puede ver que la dependencia de las muestras a los valores anteriores desciende más rápido al utilizar la matriz $\boldsymbol{\Sigma}^1$. 
 
-A partir de estos resultados, se elige utilizar el conjunto de muestras correspondiente a la matriz $\Sigma^1$ con el objetivo de obtener las estimaciones de las probabilidades: 
+A partir de estos resultados, se elige utilizar el conjunto de muestras correspondiente a la matriz $\boldsymbol{\Sigma}^1$ con el objetivo de obtener las estimaciones de las probabilidades: 
+
 
 i\. $Pr(0<X_1<1,0<X_2<1)$
 
 ii\. $Pr(-1<X_1<0,0<X_2<1)$
 
-iii\. $Pr(1<X_1<2,2<X_2<3)$
+iii\. $Pr(1<X_1<2,2<X_2<3)$ ,
 
-Para luego compararlas con las probabilidades estimadas obtenidas a través de la integración de Monte Carlo.
+para luego compararlas con las probabilidades estimadas obtenidas a través de la integración por Monte Carlo y a través de la función $\textit{integral2}$ del paquete de R $\textit{pracma}$.
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #Punto 10
@@ -833,8 +834,6 @@ prob1 <- muestra9 %>%
 
 p1 <- prob1$n[2]/(n9)
 
-
-
 #Probabilidad n°2:
 prob2 <- muestra9 %>% 
   filter(X > -1 & X < 0 ) %>% 
@@ -842,16 +841,12 @@ prob2 <- muestra9 %>%
 
 p2 <- prob2$n[2]/(n9)
 
-
-
-
 #Probabilidad n°3:
 prob3 <- muestra9 %>% 
   filter(X > 1 & X < 2 ) %>% 
   count(Y < 3 & Y > 2)
 
 prob3$n[2]/(n9)
-
 
 p3 <- prob3$n[2]/(n9)
 p3 <- 0
@@ -899,25 +894,41 @@ rdo_prob3 <- mean(p_estrella_eval)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
+# Calculo de probabilidades con funcion integral2
+p_estr <- function(x,y) exp(-((((0.5 - x)^2) + 5 * ((y - x)^2))^2))
+
+library(pracma)
+
+# Utilizando una función de R
+
+prob_func <- numeric(3)
+prob_func[1] <- integral2(p_estr, 0,1,0,1)$Q
+prob_func[2] <- integral2(p_estr, -1,0,0,1)$Q
+prob_func[3] <- integral2(p_estr, 1,2,2,3)$Q
+```
+\newpage
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 data.frame (
   Probabilidad = c("i","ii","iii"),
   Muestra = round(c(p1,p2,p3), digits = 2),
-  Monte_Carlo = round(c(rdo_prob1,rdo_prob2,rdo_prob3), digits = 2)
+  Monte_Carlo = round(c(rdo_prob1,rdo_prob2,rdo_prob3), digits = 2),
+  func_int2 = round(prob_func, digits = 2)
 ) %>%
-  kable(align = "c", col.names = c("Probabilidad", "Muestra", "Monte-Carlo")) %>%
+  kable(align = "c", col.names = c("Probabilidad", "Muestra", "Monte Carlo", "Función 'integral2'")) %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed"),
                 latex_options = c("hold_position")) %>%
-  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por la muestra y el método de Monte-Carlo" = 2))
+  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por distintos métodos" = 2))
 
 ```
 
-En la tabla 7 se puede ver que las probabilidades estimadas son similares para ambos métodos. 
+En la tabla 7 se puede ver que las probabilidades estimadas son similares con los 3 métodos, pero Metrópolis-Hastings es el menos acertado de los 3.
 
 ### Conclusión 
 
-Al emplear el algoritmo de Metrópolis-Hastings para generar muestras de la función de Rosenbrock, la matriz de covarianza $\Sigma^1$ produjo los mejores resultados en comparación con las otras 2 opciones. Esto se basó en los criterios del análisis del trace plot, que mostró que el algoritmo no se estanca en valores de $\theta$, y una tasa de aceptación favorable en comparación con $\Sigma^2$ y $\Sigma^3$. Además, la autocorrelación de la serie disminuyó rápidamente.
+Al emplear el algoritmo de Metrópolis-Hastings para generar muestras de la función de Rosenbrock, la matriz de variancias y covarianzas $\boldsymbol{\Sigma}^1$ produjo los mejores resultados, en comparación con las otras 2 opciones. Esto se basó en los criterios del análisis del trace plot, que mostró que el algoritmo no se estanca en valores de $\theta$, y tuvo una tasa de aceptación favorable en comparación con $\boldsymbol{\Sigma}^2$ y $\boldsymbol{\Sigma}^3$. Además, la autocorrelación de la serie disminuyó rápidamente.
 
-La comparación entre las probabilidades estimadas de las muestras obtenidas a través del algoritmo de MH y las obtenidas mediante integración de Monte Carlo demostró que la muestra inicial fue bastante buena en términos de precisión y calidad.
+En cuanto al cálculo de probabilidades, los resultados demostraron que, si bien MH es un algoritmo sencillo para obtener muestras de diversas distribuciones, puede no ser el método más efectivo para el cálculo de integrales. Hay que prestar especial atención a la definición de la distribución de salto propuesta y tomar un número grande de muestras
 
 
 
