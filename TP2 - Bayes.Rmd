@@ -203,7 +203,7 @@ Conocer las distintas formas que puede tomar la curva de la distribución de Kum
 
 -   Ayuda a comprender cómo los valores de los parámetros afectan el posterior y, por lo tanto, las conclusiones que se pueden extraer del análisis.
 
-Utilizando la función de MH construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$.
+Utilizando la función de MH construída al comienzo, se obtienen 2000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$.
 Como distribución propuesta se utiliza una $Beta$ con los siguientes grados de concentración:
 
 $$
@@ -319,8 +319,7 @@ grid.arrange(grafico3_5,grafico3_6,grafico3_7,nrow=1, bottom = "Gráfico 3: Mues
 \newpage
 
 En el gráfico 3 se observa que las muestras generadas para los 3 valores de concentración se ajustan bastante bien a la distribución objetivo.
-Las 3 muestras exploran el rango completo de la distribución a posteriori.
-Sin embargo, pareciera que las concentraciones $k=4$ y $k=20$ ajustan mejor.
+Las 3 muestras exploran el rango completo de la distribución a posteriori; sin embargo, pareciera que las concentraciones $k=4$ y $k=20$ ajustan mejor.
 
 Se calcula la correlación de la serie para cada valor de lag k consigo misma originando la función de autocorrelación:
 
