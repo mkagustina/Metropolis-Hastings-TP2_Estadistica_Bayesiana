@@ -446,7 +446,7 @@ Con el objetivo de analizar cuál es la matriz de covarianza para la distribuci�
 
 $$\mathbf{\Sigma^1} = \begin{bmatrix}
 2 & 0.5\\
-0.5 & 31.35 
+0.5 & 3 
 \end{bmatrix}$$
 
 $$\mathbf{\Sigma^2} = \begin{bmatrix}
@@ -564,7 +564,7 @@ data.frame(
 
 En la tabla 4 se observa que la matriz de variancias y covarianzas de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5, y por eso se continúa el análisis con ella.
 
-Se concluye con la tabla que 5000 muestras correlacionadas con la mejor matriz $\boldsymbol{\Sigma}$, equivalen a 808 y 608 muestras independientes para $\mu_1$ y $\mu_2$, respectivamente. 
+Se concluye con la tabla que 5000 muestras correlacionadas con la mejor matriz, $\boldsymbol{\Sigma^5}$, equivalen a 808 y 608 muestras independientes para $\mu_1$ y $\mu_2$, respectivamente. 
 Este número de muestras efectivas es muy bajo, lo cual representa un aspecto negativo del método de MH.
 
 A partir de las muestras obtenidas con la matriz 5, se estiman las siguientes probabilidades:
@@ -918,7 +918,7 @@ data.frame (
   kable(align = "c", col.names = c("Probabilidad", "Muestra", "Monte Carlo", "Función 'integral2'")) %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed"),
                 latex_options = c("hold_position")) %>%
-  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por distintos métodos" = 2))
+  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por distintos métodos" = 3))
 
 ```
 
