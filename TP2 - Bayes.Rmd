@@ -427,7 +427,7 @@ En esta sección se trabaja con ejemplos que permitirán advertir las limitacion
 La distribución normal multivariada es la generalización de la distribución normal univariada a múltiples dimensiones (o mejor dicho, el caso en una dimensión es un caso particular de la distribución en múltiples dimensiones).
 La función de densidad de la distribución normal en $k$ dimensiones es:
 
-$$p(x|\boldsymbol{\mu},\boldsymbol{\Sigma}) = \frac{1}{(2\pi)^{k/2}|\boldsymbol{\Sigma}|^{1/2}} \exp\left(-\frac{1}{2}(x-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(x-\boldsymbol{\mu})\right)$$ donde $\boldsymbol{\mu}$ es el vector de medias y $\boldsymbol{\Sigma}$ la matriz de covarianza.
+$$p(\boldsymbol{x}|\boldsymbol{\mu},\boldsymbol{\Sigma}) = \frac{1}{(2\pi)^{k/2}|\boldsymbol{\Sigma}|^{1/2}} \exp\left(-\frac{1}{2}(\boldsymbol{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\boldsymbol{x}-\boldsymbol{\mu})\right)$$ donde $\boldsymbol{\mu}$ es el vector de medias y $\boldsymbol{\Sigma}$ la matriz de covarianza.
 
 Utilizando la función de Metropolis-Hastings descrita al principio del informe, se obtienen muestras de una distribución normal bivariada con media $\boldsymbol{\mu}^*$ y matriz de covarianza $\boldsymbol{\Sigma}^*$, donde:
 
@@ -569,7 +569,7 @@ Este número de muestras efectivas es muy bajo, lo cual representa un aspecto ne
 A partir de las muestras obtenidas con la matriz 5, se estiman las siguientes probabilidades:
 
 i\.
-$Pr(X_1>1,X_2>0)$
+$Pr(X_1>1,X_2<0)$
 
 ii\.
 $Pr(X_1>1,X_2>2)$
@@ -845,9 +845,8 @@ prob3 <- muestra9 %>%
   filter(X > 1 & X < 2 ) %>% 
   count(Y < 3 & Y > 2)
 
-prob3$n[2]/(n9)
-
 p3 <- prob3$n[2]/(n9)
+
 p3 <- 0
 
 ```
@@ -925,9 +924,10 @@ En la tabla 7 se puede ver que las probabilidades estimadas son similares con lo
 
 ### Conclusión 
 
-Al emplear el algoritmo de Metrópolis-Hastings para generar muestras de la función de Rosenbrock, la matriz de variancias y covarianzas $\boldsymbol{\Sigma}^1$ produjo los mejores resultados, en comparación con las otras 2 opciones. Esto se basó en los criterios del análisis del trace plot, que mostró que el algoritmo no se estanca en valores de $\theta$, y tuvo una tasa de aceptación favorable en comparación con $\boldsymbol{\Sigma}^2$ y $\boldsymbol{\Sigma}^3$. Además, la autocorrelación de la serie disminuyó rápidamente.
+Al emplear el algoritmo de Metrópolis-Hastings para generar muestras de la función de Rosenbrock, la matriz de variancias y covarianzas $\boldsymbol{\Sigma}^1$ produjo los mejores resultados, en comparación con las otras 2 opciones. Esto se basó en los criterios del análisis del trace plot, que mostró que el algoritmo no se estanca en valores de $\boldsymbol{\theta}$, y tuvo una tasa de aceptación favorable en comparación con $\boldsymbol{\Sigma}^2$ y $\boldsymbol{\Sigma}^3$. Además, la autocorrelación de la serie disminuyó rápidamente.
 
-En cuanto al cálculo de probabilidades, los resultados demostraron que, si bien MH es un algoritmo sencillo para obtener muestras de diversas distribuciones, puede no ser el método más efectivo para el cálculo de integrales. Hay que prestar especial atención a la definición de la distribución de salto propuesta y tomar un número grande de muestras
+En referencia al cálculo de probabilidades, los resultados demostraron que, aunque Metropolis-Hastings es un algoritmo elemental para generar muestras de diversas distribuciones, podría no ser el enfoque más eficaz para el cálculo de integrales. Por ello se sugiere prestar especial atención a la definición de la distribución de salto propuesta y tomar un número grande de muestras.
+
 
 
 
