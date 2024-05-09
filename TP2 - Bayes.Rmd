@@ -62,7 +62,7 @@ $$ \theta^{(i+1)} = \left\{
 \right.$$
 
 A continuación, se presenta la función que implementa el algoritmo de Metropolis-Hastings para tomar muestras de una distribución de probabilidad a partir de su función de densidad.
-Se otorga flexibilidad al algoritmo permitiendo elegir entre un punto de inicio arbitrario o al azar y permitiendo utilizar distribuciones de propuesta de transición arbitrarias (por defecto, se utiliza una distribución normal estándar).
+Se otorga flexibilidad al algoritmo permitiendo elegir entre un punto de inicio arbitrario o al azar, utilizar distribuciones de propuesta de transición arbitrarias (por defecto, se utiliza una distribución normal estándar), y posibilitando el muestreo de funciones en más de una dimensión.
 \newpage
 
 ```{r, echo=TRUE, warning=FALSE, message=FALSE}
@@ -111,7 +111,7 @@ sample_mh <- function(d_objetivo, r_propuesta, d_propuesta, p_inicial, n) {
 ## Distribución de Kumaraswamy
 
 La distribución de Kumaraswamy es una distribución de probabilidad continua que se utiliza para modelar variables aleatorias con soporte en el intervalo $(0,1)$.
-Si bien graficamente la forma de su función de densidad puede hacer recordar a la distribución beta, vale mencionar que la distribución de Kumaraswamy resulta en una expresión matemática cuyo cómputo es más sencillo:
+Si bien gráficamente la forma de su función de densidad puede hacer recordar a la distribución beta, vale mencionar que la distribución de Kumaraswamy resulta en una expresión matemática cuyo cómputo es más sencillo:
 
 $$p(x|a,b) = abx^{a-1}(1-x^a)^{b-1}$$ con $a,b > 0$
 
@@ -178,8 +178,7 @@ ggplot(data = data1, aes(x = Grilla, y = Densidad)) +
 ```
 
 En el gráfico 1 se puede apreciar las distintas formas que toman las curvas de la distribución Kumaraswamy dependiendo de los parámetros a y b que se elijan.
-El parámetro $a$ controla la asimetría de la curva.
-El parámetro $b$ controla la curvatura de la gráfica.
+El parámetro $a$ controla la asimetría de la curva y el parámetro $b$ controla la curvatura de la gráfica.
 Se espera que si $a = b$, la curva sea simétrica.
 Si $a > b$, la curva se inclina hacia la derecha.
 Si $a < b$, la curva se inclina hacia la izquierda.
@@ -204,8 +203,8 @@ Conocer las distintas formas que puede tomar la curva de la distribución de Kum
 
 -   Ayuda a comprender cómo los valores de los parámetros afectan el posterior y, por lo tanto, las conclusiones que se pueden extraer del análisis.
 
-Utilizando la función construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$.
-Como distribución propuesta se utiliza una beta con los siguientes grados de concentración:
+Utilizando la función de MH construída al comienzo, se obtienen 5000 muestras de una distribución Kumaraswamy con parámetros $a=6$ y $b=2$.
+Como distribución propuesta se utiliza una $Beta$ con los siguientes grados de concentración:
 
 $$
 \begin{array}{cccc}
@@ -282,7 +281,7 @@ grid.arrange(grafico3_2,grafico3_3,grafico3_4, nrow=3, bottom ="Gráfico 2: Plot
 ```
 
 
-El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. Además, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que las 3 concentraciones presentan algunos estancamientos. El de concentración $k=4$ presenta más estancamientos que el resto.
+El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. Además, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que las 3 concentraciones presentan algunos estancamientos. 
 
 Para evaluar la convergencia de las muestras a la distribución objetivo se presenta:
 
