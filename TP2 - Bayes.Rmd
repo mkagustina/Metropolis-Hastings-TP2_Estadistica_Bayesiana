@@ -212,7 +212,7 @@ Concentración & 4 & 10 & 20 \\
 \end{array}
 $$
 
-Como punto inicial del algoritmo de MH, se obtiene un valor aleatorio de una distribución $beta(2,2)$
+Como punto inicial del algoritmo de MH, se obtiene un valor aleatorio de una distribución $Beta(2,2)$
 
 La tasa de aceptación en el algoritmo de Metropolis-Hastings indica qué tan frecuentemente se aceptan los nuevos $\theta$ propuestos, en relación al total de $\theta$ propuestos.
 
@@ -252,7 +252,7 @@ tasa3[i] <- funcion3$cant_saltos/n3
     add_header_above(c(" " = 1, "Tabla 1:Tasa de aceptación para cada concentración" = 1))
 ```
 
-En la tabla 1 se observa que, a mayor concentración de la distribución propuesta beta, mayor es la tasa de aceptación.
+En la tabla 1 se observa que, a mayor concentración de la distribución propuesta $Beta$, mayor es la tasa de aceptación.
 
 A continuación, una representación gráfica que muestra cómo evolucionan las muestras generadas por el algoritmo a lo largo del tiempo.
 
@@ -281,7 +281,8 @@ grid.arrange(grafico3_2,grafico3_3,grafico3_4, nrow=3, bottom ="Gráfico 2: Plot
 ```
 
 
-El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. Además, aunque es dificil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que las 3 concentraciones presentan algunos estancamientos. 
+El gráfico 2 muestra que para las 3 concentraciones elegidas, el trace plot NO resulta ser un ruido blanco, pues no oscila alrededor del cero. 
+Además, aunque es difícil apreciar de manera detallada el comportamiento del algoritmo debido a la cantidad de muestras, pareciera ser que a mayor concentración, hay un menor estancamiento. Esto se relaciona con lo visto en la tabla 1. 
 
 Para evaluar la convergencia de las muestras a la distribución objetivo se presenta:
 
@@ -345,8 +346,8 @@ grafico3_10 <- plot_acf(tabla3$muestra[4001:6000],
 grid.arrange(grafico3_8,grafico3_9,grafico3_10,nrow=1,  bottom = "Gráfico 4: Autocorrelación según concentración")
 
 ```
-
-Las muestras tienen que ser independientes. La dependencia de valores anteriores tiene que desaparecer rápido. En el gráfico 4 se observa que esto ocurre para los 3 valores de concentración. Este gráfico sugiere que el valor más adecuado para la concentración es $k=4$, teniendo una correlación de 0.25 en el rezago 5. Cabe destacar que la diferecia con las otras concentraciones no es grande, siendo éstas de 0.25 en los rezagos 6 y 9 aproximadamente.
+El algoritmo de Metrópolis-Hastings genera muestras correlacionadas, pero es deseable que este efecto disminuya rápidamente.En el gráfico 4 se observa que esto ocurre para los 3 valores de concentración. 
+Este gráfico sugiere que el valor más adecuado para la concentración es $k=4$, teniendo una correlación de 0.25 en el rezago 5. Cabe destacar que la diferecia con las otras concentraciones no es grande, siendo éstas de 0.25 en los rezagos 6 y 9 aproximadamente.
 
 Para cada una de las cadenas anteriores, se presentan la media de la distribución y los percentiles de $X$:
 
@@ -409,8 +410,7 @@ Al hacer uso de todo el eje real mediante el $logit(x)$, se observa que la media
 
 ### Conclusión
 
-Al analizar las distintas muestras de distribución Kumaraswamy de parámetros $a=6$ y $b=2$ con propuesta beta de distintas concentraciones, no se encontraron grandes diferencias entre éstas.
-No es posible decidir con certeza cuál de los valores de concentración es mejor, debido a que las diferencias obtenidas han sido muy pequeñas.
+Al analizar las distintas muestras de distribución Kumaraswamy de parámetros $a=6$ y $b=2$ con propuesta $Beta$ de distintas concentraciones, no se encontraron grandes diferencias entre éstas.
 Sin embargo, si habría que sugerir un valor de concentración, se sugiere el 4.
 Esto es debido a que tiene una tasa de aceptación moderada (0.45), el algoritmo no se estanca demasiado en los mismos valores de $\theta$, la muestras explora el rango completo de la distribución a posteriori y se ajusta bien a la curva.
 Además, para este valor de concentración, la autocorrelación decrece rápidamente y es menor a 0.25 a partir del rezago 5. Esto último no ocurre para las otras dos concentraciones.
@@ -445,7 +445,7 @@ Con el objetivo de analizar cuál es la matriz de covarianza para la distribuci�
 
 $$\mathbf{\Sigma^1} = \begin{bmatrix}
 2 & 0.5\\
-0.5 & 3 
+0.5 & 31.35 
 \end{bmatrix}$$
 
 $$\mathbf{\Sigma^2} = \begin{bmatrix}
@@ -563,7 +563,7 @@ data.frame(
 
 En la tabla 4 se observa que la matriz de variancias y covarianzas de la distribución propuesta que devuelve un valor más óptimo de muestras efectivas es la matriz 5, y por eso se continúa el análisis con ella.
 
-Se concluye con la tabla que 5000 muestras correlacionadas con la mejor matriz, $\boldsymbol{\Sigma^5}$, equivalen a 808 y 608 muestras independientes para $\mu_1$ y $\mu_2$, respectivamente. 
+Se concluye con la tabla que 5000 muestras correlacionadas con la mejor matriz $\boldsymbol{\Sigma}$, equivalen a 808 y 608 muestras independientes para $\mu_1$ y $\mu_2$, respectivamente. 
 Este número de muestras efectivas es muy bajo, lo cual representa un aspecto negativo del método de MH.
 
 A partir de las muestras obtenidas con la matriz 5, se estiman las siguientes probabilidades:
@@ -916,7 +916,7 @@ data.frame (
   kable(align = "c", col.names = c("Probabilidad", "Muestra", "Monte Carlo", "Función 'integral2'")) %>%
   kable_styling(bootstrap_options = c("striped","hover","condensed"),
                 latex_options = c("hold_position")) %>%
-  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por distintos métodos" = 3))
+  add_header_above(c(" " = 1, "Tabla 7: Probabilidades estimadas por distintos métodos" = 2))
 
 ```
 
